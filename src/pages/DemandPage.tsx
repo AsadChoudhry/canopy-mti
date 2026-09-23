@@ -97,7 +97,7 @@ export function DemandPage() {
                 }
               />
               <Op icon={<Equal size={16} />} />
-              <Step n="4" title="Still missing" value={`${fmt(gap)} Mt`} sub={gap > 0 ? 'Not covered by 2024 output or new committed capacity' : 'Covered by 2024 output and new capacity'} tone={gap > 0 ? 'alert' : 'ok'} />
+              <Step n="4" title="Still missing" value={`${fmt(gap)} Mt`} sub={gap > 0 ? 'Not covered by 2024 output or the capacity included in this scenario' : 'Covered by 2024 output and the capacity included in this scenario'} tone={gap > 0 ? 'alert' : 'ok'} />
             </div>
 
             <div className="grid md:grid-cols-[1fr_auto] gap-4 items-center rounded-xl border border-slate-200 bg-white px-4 py-3">
