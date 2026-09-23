@@ -123,7 +123,15 @@ export function capacityByRisk() {
   return out
 }
 
-/** Capacity share in green shirts (20 buttons or more), calculated from the matrix. */
+/**
+ * Capacity share in green shirts (20 buttons or more).
+ * Canopy's published green shirt figure excludes producers carrying known risk, which the
+ * matrix marks as "light green with red". Both are returned so neither is implied by accident.
+ */
 export function greenShirtCapacity() {
-  return HOT_BUTTON_2025.filter((x) => (x.total ?? -99) >= 20).reduce((a, x) => a + x.capacityPct, 0)
+  const green = HOT_BUTTON_2025.filter((x) => (x.total ?? -99) >= 20)
+  const withKnownRisk = green.filter((x) => x.risk === 'KR' || x.risk === 'RP')
+  const total = green.reduce((a, x) => a + x.capacityPct, 0)
+  const knownRisk = withKnownRisk.reduce((a, x) => a + x.capacityPct, 0)
+  return { total, knownRisk, clean: total - knownRisk, count: green.length, cleanCount: green.length - withKnownRisk.length }
 }

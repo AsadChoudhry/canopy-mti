@@ -433,7 +433,7 @@ export const SEED_SCENARIOS: Scenario[] = [
 ]
 
 export const SEED_STORE: Store = {
-  version: 9,
+  version: 10,
   sources: [...SEED_SOURCES, ...METSA_SOURCES, ...FASHION_SOURCES, ...FIBRE_SOURCES],
   quantities: [...SEED_QUANTITIES, ...METSA_QUANTITIES, ...FASHION_QUANTITIES, ...FIBRE_QUANTITIES],
   companies: [METSA_COMPANY, LENZING_COMPANY, ...SEED_COMPANIES],

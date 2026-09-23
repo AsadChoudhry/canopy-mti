@@ -313,7 +313,7 @@ function FashionOverview() {
     <div className="flex flex-col gap-4">
       <div className="grid md:grid-cols-3 gap-4">
         <KpiCard icon={<Shirt size={24} />} iconBg="bg-brand-100 text-brand-600" value="8.4 Mt" label="Man-made cellulosic fibre, 2024" sub="6% of the 132 Mt global fibre market, and the only forest-derived category" quantity={Q('q_fibre_mmcf_2024')} />
-        <KpiCard icon={<Leaf size={24} />} iconBg="bg-green-100 text-green-600" value={`${Q('q_mmcf_green')?.value}%`} label="MMCF capacity in green shirt producers" sub="22 of the 28 scored producers in the Hot Button matrix" quantity={Q('q_mmcf_green')} />
+        <KpiCard icon={<Leaf size={24} />} iconBg="bg-green-100 text-green-600" value={`${Q('q_mmcf_green')?.value}%`} label="MMCF capacity in green shirt producers" sub={`Excludes known risk. Including it, ${Q('q_mmcf_green_all')?.value}% scores 20 buttons or more`} quantity={Q('q_mmcf_green')} />
         <KpiCard icon={<TreePine size={24} />} iconBg="bg-red-50 text-red-700" value={`${Q('q_mmcf_known_risk')?.value}%`} label="Capacity at known risk" sub={`Plus ${Q('q_mmcf_audit_required')?.value}% requiring an audit`} quantity={Q('q_mmcf_known_risk')} />
       </div>
 
@@ -362,7 +362,7 @@ function FashionOverview() {
                 </div>
               ))}
             </div>
-            <p className="text-[11px] text-slate-500 mt-2">Calculated from the per-producer capacity shares in the 2025 matrix.</p>
+            <p className="text-[11px] text-slate-500 mt-2">Calculated from the per-producer capacity shares in the 2025 matrix. Canopy reports capacity share and publishes no global tonnage, so these percentages are not multiplied by the 8.4 Mt production figure above.</p>
           </div>
         </Card>
       </div>

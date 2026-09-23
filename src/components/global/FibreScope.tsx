@@ -51,9 +51,10 @@ export function FibreScope({ total, mmcf, certified, recycled, recycledTextiles 
         ))}
       </div>
 
-      <p className="text-[11px] text-slate-500">
-        Polyester, cotton and the rest are not forest-derived, so they sit outside CanopyStyle. Cotton matters indirectly: post-consumer cotton textiles are the main Next Gen feedstock for MMCF.
-      </p>
+      <div className="text-[11px] text-slate-500 flex flex-col gap-1.5">
+        <p>Polyester, cotton and the rest are not forest-derived, so they sit outside CanopyStyle. Cotton matters indirectly: post-consumer cotton textiles are the main Next Gen feedstock for MMCF.</p>
+        <p>These tonnes are Textile Exchange production figures. Canopy publishes no global MMCF tonnage, only each producer as a share of global capacity, so the two are kept separate and never multiplied.</p>
+      </div>
     </div>
   )
 }
