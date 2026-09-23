@@ -1,11 +1,13 @@
 import { NavLink } from 'react-router-dom'
-import { Globe2, Building2, Leaf, Database } from 'lucide-react'
+import { Globe2, Building2, Leaf, Database, Factory, Map } from 'lucide-react'
 import { cn } from '@/lib/cn'
 
 const NAV = [
   { to: '/', label: 'Global overview', icon: Globe2, end: true },
   { to: '/companies', label: 'Companies', icon: Building2 },
   { to: '/solutions', label: 'Canopy solutions', icon: Leaf },
+  { to: '/mills', label: 'Next Gen mills', icon: Factory },
+  { to: '/roadmap', label: 'Year-one roadmap', icon: Map },
   { to: '/workspace', label: 'Data workspace', icon: Database },
 ]
 

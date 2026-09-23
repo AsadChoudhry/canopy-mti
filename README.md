@@ -19,6 +19,8 @@ Stack: React 19 · TypeScript · Tailwind v4 · React Router · Recharts · Luci
 | `/` | Global overview — FAO 2024 baseline, evidence-state fibre composition (with explicit demo mode), production / fibre-origin map, researched-producer table. Fashion tab: "Data not yet populated". |
 | `/companies/:id?product=…&panel=transition&tab=…` | Company workspace. Producer view (Mondi, Smurfit Westrock) with selected product, supply-chain context and the **Transition options** panel (Alternatives / Scenario / Evidence) that never leaves the company context. Brand view (H&M) is a separate purchasing accounting view. |
 | `/solutions` | Canopy solutions catalogue — EcoPaper / Next Gen providers / ForestMapper, search + filters, shortlist. No calculator here by design. |
+| `/mills` | Next Gen mill siting, India first. Candidate regions scored on verified feedstock (PIB paddy straw, Fashion for Good textile waste) and existing MMCF demand (Hot Button 2026), with adjustable weights and a list of the data layers to add next. |
+| `/roadmap` | Year-one roadmap: what is built, what is proposed, who owns each piece and the decision it changes. |
 | `/workspace?tab=…` | Data workspace — forms for companies, products, facilities, origins, sourcing links, quantities, sources, solutions, scenarios; validation; local persistence; JSON import/export. |
 
 ## Implementation note
@@ -33,7 +35,14 @@ Stack: React 19 · TypeScript · Tailwind v4 · React Router · Recharts · Luci
 - **Canopy Next Gen providers directory** — category counts (8 / 2 / 19 / 9 / 3 / 5); provider names load client-side and were not captured.
 - Mondi ESRS & Performance Index 2025 was downloaded but no claims were extracted from it yet (marked "needs review").
 
+- **Hot Button Progress Report 2026** (released 2026-09-22) — 2026 grid transcribed from page 5; shirt colours and Next Gen markers read from the rendered page. Green shirt capacity excluding known risk calculates to 53.0% (22 of 28 assessed producers), matching Canopy's published 53%.
+- **Canopy Annual Reports 2023/24 and 2024/25** — 60 Mt Next Gen target by 2033, 1.3 Gt GHG avoided, $78B investment, 8.35 Mt Next Gen production in 2024, 4 t CO2e avoided per tonne of Next Gen pulp, Re-START Alliance 1 Mt by 2030.
+- **PIB, 8 Oct 2021** — paddy straw generated: Punjab 18.74 Mt, Haryana 6.8 Mt, eight NCR districts of UP 0.67 Mt (2021 projections).
+- **Fashion for Good, Wealth in Waste** — India textile waste up to 7.8 Mt a year (summary article only; full report not opened).
+
 ### Calculated values
+- Road to 60 Mt: 24.5% a year = (60 / 8.35)^(1/9) − 1; ~$1,510 per tonne of new annual output = $78B / (60 − 8.35) Mt.
+- Scenario GHG estimate = Next Gen fibre tonnes introduced × 4 t CO2e (Canopy's pulp average applied to fibre tonnes; recycled fibre not credited).
 - Mondi paper & board 4.8 Mt = 2.6 + 1.3 + 0.9 (market pulp excluded).
 - Mondi ~1.13% and Smurfit Westrock ~4.52% = company 2025 output / FAO 2024 world output × 100. Labelled "2025 company output compared with 2024 global output"; year mismatch stated; not a share of global fibre consumption.
 

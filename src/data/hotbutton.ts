@@ -135,3 +135,169 @@ export function greenShirtCapacity() {
   const knownRisk = withKnownRisk.reduce((a, x) => a + x.capacityPct, 0)
   return { total, knownRisk, clean: total - knownRisk, count: green.length, cleanCount: green.length - withKnownRisk.length }
 }
+
+/* ------------------------------------------------------------------ */
+/* Hot Button Progress Report 2026                                     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * 2026 shirt bands, read from the grid legend. The 2026 legend splits the 2025 bands further:
+ * light green is shown as 25 to 29 (graded) and 20 to 24 (plain), and red as 5 to 9 (graded) and 0 to 4.
+ */
+export type Shirt2026 = 'dark_green' | 'mid_green' | 'light_green' | 'light_green_red' | 'yellow' | 'red_graded' | 'red' | 'white'
+
+export const SHIRT_2026_META: Record<Shirt2026, { label: string; colour: string; range: string; green: boolean }> = {
+  dark_green: { label: 'Dark green', colour: '#00614f', range: '30 to 40', green: true },
+  mid_green: { label: 'Light green (upper)', colour: '#2f8f4e', range: '25 to 29', green: true },
+  light_green: { label: 'Light green', colour: '#8cc63f', range: '20 to 24', green: true },
+  light_green_red: { label: 'Light green with red', colour: '#b5a33a', range: '20 to 24, known risk', green: true },
+  yellow: { label: 'Yellow', colour: '#f2b53a', range: '10 to 19', green: false },
+  red_graded: { label: 'Red (upper)', colour: '#ec7a2c', range: '5 to 9', green: false },
+  red: { label: 'Red', colour: '#d14343', range: '0 to 4', green: false },
+  white: { label: 'Not assessed', colour: '#c7c7c7', range: 'newly engaged', green: false },
+}
+
+/** The band a score falls in under the 2026 legend. Used for the criteria test as well. */
+export function shirtBand(total: number | null, risk: RiskStatus): Shirt2026 {
+  if (total === null) return 'white'
+  if (total >= 30) return 'dark_green'
+  if (total >= 25) return 'mid_green'
+  if (total >= 20) return risk === 'KR' || risk === 'RP' ? 'light_green_red' : 'light_green'
+  if (total >= 10) return 'yellow'
+  if (total >= 5) return 'red_graded'
+  return 'red'
+}
+
+export interface HotButton2026Row {
+  id: string
+  /** Matching id in the 2025 matrix, where the producer was listed. */
+  id2025?: string
+  producer: string
+  capacityPct: number
+  types: string[]
+  /** Blank risk cell in the grid means not yet assessed. */
+  risk: RiskStatus
+  shirt: Shirt2026
+  /** Recycle marker in the NextGen Solutions column. */
+  nextGen: boolean
+  /** ZDHC chemical management score, null where the grid leaves it blank. */
+  chem: number | null
+  note?: string
+}
+
+const h = (id: string, producer: string, capacityPct: number, types: string[], risk: RiskStatus, shirt: Shirt2026, nextGen: boolean, chem: number | null, extra: Partial<HotButton2026Row> = {}): HotButton2026Row => ({
+  id,
+  id2025: id,
+  producer,
+  capacityPct,
+  types,
+  risk,
+  shirt,
+  nextGen,
+  chem,
+  ...extra,
+})
+
+/**
+ * 2026 grid, transcribed from page 5 of the published PDF (released 22 September 2026).
+ * Shirt colours and Next Gen markers are images in the PDF and were read from the rendered page.
+ * No button scores are published for 2026; shirts are carried over from 2025 except for three producers.
+ */
+export const HOT_BUTTON_2026: HotButton2026Row[] = [
+  h('acegreen', 'AceGreen Eco-Material Technology', 0.01, ['LYO'], 'LR', 'dark_green', false, 6.0),
+  h('aditya_birla', 'Aditya Birla (Grasim / Birla Cellulose)', 15.87, ['VSF', 'LYO', 'VFY'], 'LR', 'dark_green', true, 6.5, { note: 'Lyocell expansion at Harihar, India, first phase due 2027. Cooperation agreement with Circulose announced December 2025.' }),
+  h('apr', 'Asia Pacific Rayon (RGE Group)', 3.99, ['VSF'], 'RP', 'red_graded', false, 6.0),
+  h('baotou_zhongyuan', 'Baotou Zhongyuan Biobased New Materials', 0.09, ['LYO'], 'IP', 'light_green', false, null, { id2025: 'zhengzhou', note: 'Part of Zhengzhou Zhongyuan Enterprise Group, listed as Zhengzhou Zhongyuan in 2025. The grid shows audit in progress; the profile page reports a first audit in 2026 finding low risk. 6,000 t lyocell capacity.' }),
+  h('century_rayon', 'Century Rayon', 0.34, ['VFY'], 'LR', 'mid_green', true, 8.0),
+  h('cta', 'China Textile Academy', 1.25, ['LYO'], 'NK', 'mid_green', true, 2.0, { note: 'Lyocell capacity up 10,000 t to 110,000 t.' }),
+  h('daiwabo', 'Daiwabo Rayon Co. Ltd.', 0.34, ['VSF'], 'LR', 'dark_green', true, 2.0),
+  h('dp_acetate', 'DP Acetate', 0.07, ['ACE'], 'NK', 'light_green', false, 0.0, { note: 'Rainbow shirt in 2025. First CanopyStyle audit found no known high risk.' }),
+  h('miroglio', 'E. Miroglio', 0.01, ['VFY'], 'LR', 'mid_green', true, null),
+  h('eastman', 'Eastman Chemical Company', 2.28, ['ACE'], 'NK', 'dark_green', true, 2.0),
+  h('enka', 'ENKA', 0.09, ['VFY'], 'LR', 'mid_green', false, 2.0),
+  h('hubei_xinyang', 'Hubei Xinyang', 0.03, ['LYO'], 'NA', 'white', false, null),
+  h('jiangsu_huasaier', 'Jiangsu Huasaier', 0.68, ['LYO'], 'NK', 'light_green', false, 0.0, { note: 'Rainbow shirt in 2025. First CanopyStyle audit found no known high risk.' }),
+  h('jilin', 'Jilin Chemical Fiber Stock Co., Ltd.', 2.62, ['VFY', 'VSF'], 'LR', 'dark_green', true, 8.0, { note: 'New 16,000 t viscose filament yarn mill.' }),
+  h('karafiber', 'Karafiber', 0.57, ['LYO'], 'LR', 'mid_green', false, 2.0),
+  h('lenzing', 'Lenzing', 12.65, ['LYO', 'VSF'], 'LR', 'dark_green', true, 8.0, { note: 'Risk status shown as low risk in 2026, no known high risk in 2025.' }),
+  h('mi_demo', 'MI Demo', 0.0, ['LYO'], 'LR', 'mid_green', false, 2.0, { note: 'Metsä Group demonstration plant.' }),
+  h('nanjing', 'Nanjing Chemical Fibre Co., Ltd.', 1.37, ['VSF'], 'NK', 'light_green', false, 2.0),
+  h('sateri', 'Sateri (RGE Group)', 24.8, ['VSF', 'LYO'], 'KR', 'light_green_red', true, 4.0, { note: 'New 150,000 t lyocell line at Yutai, Shandong, March 2026; four lines totalling 600,000 t planned.' }),
+  h('hongtaiding', 'Shandong Hongtaiding', 0.8, ['LYO'], 'NK', 'mid_green', false, 0.0),
+  h('shandong_yamei', 'Shandong Yamei', 3.65, ['VSF'], 'AR', 'red_graded', false, 0.0),
+  h('shandong_yingli', 'Shandong Yingli', 0.0, ['LYO'], 'NA', 'white', false, null),
+  h('silver_hawk', 'Silver Hawk', 2.05, ['VSF'], 'AR', 'red', false, 2.0),
+  h('soalon', 'Soalon Corporation', 0.04, ['ACE'], 'LR', 'mid_green', false, null),
+  h('swan_fiber', 'Swan Fiber', 0.34, ['LYO'], 'NA', 'white', false, null),
+  h('tangshan_sanyou', 'Tangshan Sanyou', 9.22, ['VSF', 'LYO'], 'NK', 'dark_green', true, 6.5),
+  h('weifang_xinlong', 'Weifang Xinlong Biological Materials', 2.28, ['VSF'], 'AR', 'red_graded', false, 0.0),
+  h('woodspin', 'Woodspin', 0.0, ['LYO'], 'NA', 'white', false, null),
+  h('xinjiang_yaao', "Xinjiang Ya'ao", 1.37, ['VSF'], 'NA', 'white', false, null),
+  h('xinjiang_zhongtai', 'Xinjiang Zhongtai Textile Co., Ltd.', 8.44, ['VSF'], 'AR', 'red', false, 0.0),
+  h('xinxiang', 'Xinxiang Chemical Fiber (Bailu Group)', 1.4, ['VFY'], 'LR', 'dark_green', true, null, { note: 'Juncao grass pulp capacity expanded to 10,000 t.' }),
+  h('yibin_grace', 'Yibin Grace Group Co. Ltd.', 3.31, ['VSF', 'VFY', 'LYO'], 'NK', 'dark_green', true, 3.5),
+  h('huafeng', 'Zhejiang Huafeng', 0.02, ['LYO'], 'LR', 'mid_green', false, 0.0),
+]
+
+/** Headline figures Canopy published with the 2026 report. */
+export const HB_2026_HEADLINES = {
+  greenProducers: 22,
+  assessedProducers: 28,
+  greenProducersPct: 79,
+  greenProducersPct2025: 70,
+  greenCapacityPct: 53,
+  greenCapacityPct2025: 54,
+  nextGenLines: 20,
+  nextGenLines2025: 16,
+  nextGenLinesChina: 12,
+}
+
+/** Green shirt capacity in 2026, excluding known risk, to match Canopy's own definition. */
+export function greenShirtCapacity2026() {
+  const green = HOT_BUTTON_2026.filter((x) => SHIRT_2026_META[x.shirt].green)
+  const clean = green.filter((x) => x.shirt !== 'light_green_red')
+  return {
+    total: green.reduce((a, x) => a + x.capacityPct, 0),
+    clean: clean.reduce((a, x) => a + x.capacityPct, 0),
+    count: green.length,
+    cleanCount: clean.length,
+    assessed: HOT_BUTTON_2026.filter((x) => x.shirt !== 'white').length,
+  }
+}
+
+export function capacityByRisk2026() {
+  const out: Record<RiskStatus, number> = { NK: 0, LR: 0, KR: 0, RP: 0, AR: 0, IP: 0, NA: 0 }
+  HOT_BUTTON_2026.forEach((x) => (out[x.risk] += x.capacityPct))
+  return out
+}
+
+export interface HotButtonChange {
+  id: string
+  producer: string
+  kind: 'shirt' | 'risk' | 'capacity' | 'joined' | 'left'
+  from?: string
+  to?: string
+  delta?: number
+}
+
+/** What moved between the 2025 matrix and the 2026 grid. */
+export function hotButtonChanges(): HotButtonChange[] {
+  const out: HotButtonChange[] = []
+  const by25 = new Map(HOT_BUTTON_2025.map((r) => [r.id, r]))
+  const seen = new Set<string>()
+  HOT_BUTTON_2026.forEach((n) => {
+    const o = n.id2025 ? by25.get(n.id2025) : undefined
+    if (!o) {
+      out.push({ id: n.id, producer: n.producer, kind: 'joined', to: SHIRT_2026_META[n.shirt].label })
+      return
+    }
+    seen.add(o.id)
+    const oldShirt = shirtBand(o.total, o.risk)
+    if (oldShirt !== n.shirt) out.push({ id: n.id, producer: n.producer, kind: 'shirt', from: o.total === null ? 'Not scored' : SHIRT_2026_META[oldShirt].label, to: SHIRT_2026_META[n.shirt].label })
+    if (o.risk !== n.risk) out.push({ id: n.id, producer: n.producer, kind: 'risk', from: RISK_META[o.risk].short, to: RISK_META[n.risk].short })
+    const d = +(n.capacityPct - o.capacityPct).toFixed(2)
+    if (Math.abs(d) >= 0.3) out.push({ id: n.id, producer: n.producer, kind: 'capacity', from: `${o.capacityPct.toFixed(2)}%`, to: `${n.capacityPct.toFixed(2)}%`, delta: d })
+  })
+  HOT_BUTTON_2025.filter((o) => !seen.has(o.id)).forEach((o) => out.push({ id: o.id, producer: o.producer, kind: 'left', from: `${o.capacityPct.toFixed(2)}%` }))
+  return out
+}

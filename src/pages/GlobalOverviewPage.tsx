@@ -8,9 +8,10 @@ import { Pill } from '@/components/ui/Pill'
 import { EvidenceBadge } from '@/components/ui/EvidenceBadge'
 import { SvgWorldMap, type MapBubble } from '@/components/company/SvgWorldMap'
 import { PackagingComposition } from '@/components/global/PackagingComposition'
-import { HotButtonTable, RiskPill } from '@/components/global/HotButton'
+import { CriteriaTest, HotButton2026Table, HotButtonChanges, RiskPill } from '@/components/global/HotButton'
+import { RoadTo60 } from '@/components/global/RoadTo60'
 import { MmcfScope } from '@/components/global/MmcfScope'
-import { HOT_BUTTON_2025, HB_CRITERIA, RISK_META, capacityByRisk, type RiskStatus } from '@/data/hotbutton'
+import { HB_2026_HEADLINES, HB_CRITERIA, HOT_BUTTON_2026, RISK_META, capacityByRisk2026, type RiskStatus } from '@/data/hotbutton'
 import { useStore } from '@/store/StoreContext'
 import { FIBRE_META, type Quantity } from '@/data/model'
 import faoPkg from '@/data/fao_packaging_2024.json'
@@ -115,6 +116,8 @@ export function GlobalOverviewPage() {
             <div className="rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-[13px] font-semibold text-slate-700">2024</div>
           </div>
         </div>
+
+        <RoadTo60 />
 
         {sector === 'fashion' ? (
           <FashionOverview />
@@ -303,9 +306,11 @@ function FashionOverview() {
   const { data } = useStore()
   const [selected, setSelected] = useState<string | null>(null)
   const Q = (id: string) => data.quantities.find((q) => q.id === id)
-  const byRisk = capacityByRisk()
-  const rows = [...HOT_BUTTON_2025].sort((a, b) => b.capacityPct - a.capacityPct)
+  const byRisk = capacityByRisk2026()
+  const rows = [...HOT_BUTTON_2026].sort((a, b) => b.capacityPct - a.capacityPct)
   const hbSource = data.sources.find((s) => s.id === 'src_hotbutton_2025')
+  const hb26Source = data.sources.find((s) => s.id === 'src_hotbutton_2026')
+  const H = HB_2026_HEADLINES
 
   const riskOrder: RiskStatus[] = ['KR', 'RP', 'AR', 'IP', 'NA', 'LR', 'NK']
 
@@ -313,8 +318,8 @@ function FashionOverview() {
     <div className="flex flex-col gap-4">
       <div className="grid md:grid-cols-3 gap-4">
         <KpiCard icon={<Shirt size={24} />} iconBg="bg-brand-100 text-brand-600" value="8.4 Mt" label="Man-made cellulosic fibre, 2024" sub="Viscose, lyocell, modal, acetate and cupro" quantity={Q('q_fibre_mmcf_2024')} />
-        <KpiCard icon={<Leaf size={24} />} iconBg="bg-green-100 text-green-600" value={`${Q('q_mmcf_green')?.value}%`} label="MMCF capacity in green shirt producers" sub={`Excludes known risk. Including it, ${Q('q_mmcf_green_all')?.value}% scores 20 buttons or more`} quantity={Q('q_mmcf_green')} />
-        <KpiCard icon={<TreePine size={24} />} iconBg="bg-red-50 text-red-700" value={`${Q('q_mmcf_known_risk')?.value}%`} label="Capacity at known risk" sub={`Plus ${Q('q_mmcf_audit_required')?.value}% requiring an audit`} quantity={Q('q_mmcf_known_risk')} />
+        <KpiCard icon={<Leaf size={24} />} iconBg="bg-green-100 text-green-600" value={`${Q('q_mmcf_green_2026')?.value}%`} label="MMCF capacity in green shirts, 2026" sub={`${H.greenProducers} of ${H.assessedProducers} assessed producers. ${H.greenCapacityPct2025}% in 2025. Excludes known risk`} quantity={Q('q_mmcf_green_2026')} />
+        <KpiCard icon={<TreePine size={24} />} iconBg="bg-red-50 text-red-700" value={`${Q('q_mmcf_known_risk_2026')?.value}%`} label="Capacity at known risk, 2026" sub={`Plus ${Q('q_mmcf_audit_required_2026')?.value}% requiring an audit`} quantity={Q('q_mmcf_known_risk_2026')} />
       </div>
 
       <Card>
@@ -362,20 +367,60 @@ function FashionOverview() {
                 </div>
               ))}
             </div>
-            <p className="text-[11px] text-slate-500 mt-2">Calculated from the per-producer capacity shares in the 2025 matrix. Canopy reports capacity share and publishes no global tonnage, so these percentages are not multiplied by the 8.4 Mt production figure above.</p>
+            <p className="text-[11px] text-slate-500 mt-2">Calculated from the per-producer capacity shares in the 2026 grid. Canopy reports capacity share and publishes no global tonnage, so these percentages are not multiplied by the 8.4 Mt production figure above.</p>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid xl:grid-cols-[1fr_1.35fr] gap-4 items-start">
+        <Card>
+          <CardHeader
+            title="What changed since 2025"
+            subtitle="Hot Button Progress Report 2026, released 22 September 2026"
+            action={hb26Source && <EvidenceBadge source={hb26Source} label="Hot Button 2026" size="xs" />}
+          />
+          <div className="px-5 pb-5">
+            <div className="grid grid-cols-3 gap-2 mb-3">
+              {[
+                { v: `${H.greenProducersPct}%`, l: 'producers in green shirts', s: `${H.greenProducersPct2025}% in 2025` },
+                { v: `${H.nextGenLines}`, l: 'Next Gen product lines', s: `${H.nextGenLines2025} in 2025 · ${H.nextGenLinesChina} from China` },
+                { v: `${rows.filter((r) => r.nextGen).length}`, l: 'producers with a Next Gen line', s: 'Marked in the 2026 grid' },
+              ].map((x) => (
+                <div key={x.l} className="rounded-xl bg-cream-100 border border-cream-200 px-3 py-2">
+                  <div className="text-[20px] font-bold text-slate-900 tabular-nums leading-tight">{x.v}</div>
+                  <div className="text-[11px] text-slate-600 leading-tight">{x.l}</div>
+                  <div className="text-[10px] text-slate-400 mt-0.5">{x.s}</div>
+                </div>
+              ))}
+            </div>
+            <HotButtonChanges />
+            <p className="text-[11px] text-slate-400 mt-2">Derived by comparing the two grids. Canopy reports two producers ceased MMCF production and one joined; three 2025 names are absent from the 2026 grid. Zhengzhou Zhongyuan is matched to Baotou Zhongyuan, a company in the same group.</p>
+          </div>
+        </Card>
+
+        <Card>
+          <CardHeader
+            title="Producers"
+            subtitle="2026 grid, ranked by share of global MMCF capacity. Scores are from 2025; 2026 publishes none."
+            action={<Link to="/companies/lenzing" className="text-[12px] font-semibold text-brand-600 hover:underline">Open Lenzing</Link>}
+          />
+          <div className="px-5 pb-5">
+            <div className="max-h-[520px] overflow-y-auto scroll-thin">
+              <HotButton2026Table rows={rows} onSelect={setSelected} selectedId={selected} />
+            </div>
+            <p className="text-[11px] text-slate-400 mt-2">Hover a row for Canopy's 2026 update. Lenzing and Sateri have company records loaded.</p>
           </div>
         </Card>
       </div>
 
       <Card>
         <CardHeader
-          title="Producers"
-          subtitle="Ranked by share of global MMCF capacity"
-          action={<Link to="/companies/lenzing" className="text-[12px] font-semibold text-brand-600 hover:underline">Open Lenzing</Link>}
+          title="Test the 2027 criteria"
+          subtitle="Canopy is revising the Hot Button criteria for 2027. Change what each criterion is worth and see who changes shirt."
+          action={<Pill tone="inferred">Exploratory</Pill>}
         />
         <div className="px-5 pb-5">
-          <HotButtonTable rows={rows} onSelect={setSelected} selectedId={selected} />
-          <p className="text-[11px] text-slate-400 mt-2">Lenzing is the only producer with a company record loaded.</p>
+          <CriteriaTest />
         </div>
       </Card>
     </div>
