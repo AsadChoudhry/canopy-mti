@@ -38,7 +38,7 @@ export const TIER_META: Record<Tier, { label: string; colour: string }> = {
 export type Exposure = 'high' | 'watch' | 'low' | 'unknown'
 export const EXPOSURE_META: Record<Exposure, { label: string; colour: string; bg: string; why: string }> = {
   high: { label: 'High', colour: '#d14343', bg: 'bg-red-50 border-red-200', why: 'Known risk in Hot Button, or a high-risk origin country.' },
-  watch: { label: 'Watch', colour: '#e09a12', bg: 'bg-amber-50 border-amber-200', why: 'Standard-risk country, audit outstanding, or under 80% certified.' },
+  watch: { label: 'Watch', colour: '#e09a12', bg: 'bg-amber-50 border-amber-200', why: 'Standard-risk country, audit outstanding, or certified share under 80% or not loaded.' },
   low: { label: 'Low', colour: '#009a7e', bg: 'bg-green-50 border-green-200', why: 'Low-risk countries only and at least 80% certified.' },
   unknown: { label: 'Unknown', colour: '#9aa3ad', bg: 'bg-slate-50 border-slate-200', why: 'No origin or mill country loaded.' },
 }
@@ -85,12 +85,13 @@ export function riskRow(c: Company, store: Store): RiskRow {
   places.filter((p) => p.tier && p.tier !== 'low').forEach((p) => flags.push(`${p.country}: ${TIER_META[p.tier!].label.toLowerCase()} risk country under EUDR`))
   places.filter((p) => !p.tier).forEach((p) => flags.push(`${p.country}: EUDR tier not loaded`))
   if (certifiedPct !== null && certifiedPct < 80) flags.push(`Only ${certifiedPct}% certified`)
+  if (certifiedPct === null) flags.push('Certified share not loaded')
   if (millOnly && places.length) flags.push('Wood origin not declared; mill countries shown')
 
   let exposure: Exposure = 'unknown'
   if (places.length || hb) {
     if ((hb && (hb.risk === 'KR' || hb.risk === 'RP')) || places.some((p) => p.tier === 'high')) exposure = 'high'
-    else if ((hb && (hb.risk === 'AR' || hb.risk === 'IP' || hb.risk === 'NA')) || places.some((p) => p.tier === 'standard' || !p.tier) || (certifiedPct !== null && certifiedPct < 80) || millOnly) exposure = 'watch'
+    else if ((hb && (hb.risk === 'AR' || hb.risk === 'IP' || hb.risk === 'NA')) || places.some((p) => p.tier === 'standard' || !p.tier) || certifiedPct === null || certifiedPct < 80 || millOnly) exposure = 'watch'
     else exposure = 'low'
   }
 

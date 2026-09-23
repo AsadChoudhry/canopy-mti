@@ -183,7 +183,7 @@ export const EU_CANDIDATES: CandidateRegion[] = [
     pillars: {
       agri: { signal: 'none', text: 'Not a straw region.' },
       textile: { signal: 'present', text: '6.94 Mt of textile waste in the EU (2022). Only EU-wide totals are loaded, not flows into Sweden.', quantityId: 'q_eu_textile_waste' },
-      demand: { signal: 'strong', text: 'Circulose restarting a 60,000 t a year textile-to-textile pulp mill in 2026, with commitments from 11 brands.', quantityId: 'q_circulose_capacity' },
+      demand: { signal: 'present', text: '11 brands have committed to buy Circulose pulp from the restart. Names and tonnes are not published. (Circulose\'s own 60,000 t is supply, shown in the project pipeline.)', sourceId: 'src_circulose_ortviken' },
     },
     why: 'The world\'s first commercial-scale chemical textile recycling plant is restarting here, with room to double capacity. The fastest European tonnes come from filling and expanding it.',
     openQuestions: ['Where will the sorted cotton-rich feedstock come from once EU textile EPR schemes start in 2028?', 'Which brands have committed, and at what volumes?'],
@@ -199,7 +199,7 @@ export const EU_CANDIDATES: CandidateRegion[] = [
     pillars: {
       agri: { signal: 'none', text: 'Not a straw region.' },
       textile: { signal: 'present', text: 'EU-wide textile waste only. No Finnish collection figure loaded.', quantityId: 'q_eu_textile_waste' },
-      demand: { signal: 'present', text: 'Infinited Fiber holds an environmental permit (March 2026) for a recycled fibre factory on a former Stora Enso site. No investment decision yet.', sourceId: 'src_infinited_kemi' },
+      demand: { signal: 'unknown', text: 'No published buyer commitments for Infinited Fiber\'s planned output. (The permitted factory itself is supply, shown in the project pipeline.)', sourceId: 'src_infinited_kemi' },
     },
     why: 'Permitted, on a brownfield pulp site with existing wastewater treatment. What is missing is the investment decision, which is where Canopy\'s brand demand evidence can help.',
     openQuestions: ['What offtake volume would unlock the final investment decision?', 'Is the 30,000 t a year plan still current?'],
@@ -254,7 +254,7 @@ export const REGION_META: Record<RegionKey, RegionMeta> = {
     label: 'India',
     fit: ['356'],
     highlight: ['356'],
-    question: 'Which Indian regions should Canopy put in front of investors first, and for which kind of mill?',
+    question: 'Which Indian regions should Canopy validate first, and for which kind of mill?',
     context: [
       { label: 'Paddy straw, Punjab + Haryana + NCR UP', value: '26.2 Mt', quantityId: 'q_in_paddy_punjab', sub: 'Generated, 2021 projection. Not all of it is available.' },
       { label: 'Textile waste in India each year', quantityId: 'q_in_textile_waste', sub: '51% post-consumer · 42% pre-consumer · 7% imported' },
@@ -265,7 +265,7 @@ export const REGION_META: Record<RegionKey, RegionMeta> = {
     label: 'North America',
     fit: ['124', '840'],
     highlight: ['124', '840'],
-    question: 'Where should the second and third North American straw mills go?',
+    question: 'Where should Canopy look for the second and third North American straw mills?',
     context: [
       { label: 'Red Leaf straw pulp, Regina, from 2028', quantityId: 'q_redleaf_pulp_out', sub: 'Market pulp from 400,000 t of straw a year' },
       { label: 'Straw to pulp yield, Red Leaf design', quantityId: 'q_straw_pulp_yield', sub: 'The planner uses this as its default' },

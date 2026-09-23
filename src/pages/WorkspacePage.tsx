@@ -121,7 +121,7 @@ const SCHEMAS: Record<Collection, FieldDef[]> = {
     { key: 'url', label: 'URL', type: 'text' },
     { key: 'page', label: 'Page / section', type: 'text', half: true },
     { key: 'accessDate', label: 'Access date', type: 'text', half: true, hint: 'YYYY-MM-DD' },
-    { key: 'accessed', label: 'Document actually opened by Canopy', type: 'boolean', half: true },
+    { key: 'accessed', label: 'Document opened and read by the researcher', type: 'boolean', half: true },
     { key: 'reviewStatus', label: 'Review status', type: 'select', options: ['needs_review', 'reviewed', 'disputed'].map((v) => ({ value: v, label: v.replace('_', ' ') })), half: true },
     { key: 'passage', label: 'Supporting passage / evidence note', type: 'textarea' },
     { key: 'limitations', label: 'Limitations', type: 'textarea' },
@@ -326,7 +326,7 @@ export function WorkspacePage() {
     }
     if (submit && tab === 'sources') rec = { ...rec, reviewStatus: 'needs_review' }
     upsert(tab, rec as never)
-    setFlash(submit ? 'Submitted for review' : 'Draft saved')
+    setFlash(submit ? 'Saved in this browser and marked needs review' : 'Draft saved')
     setTimeout(() => setFlash(null), 1500)
   }
 
@@ -386,7 +386,7 @@ export function WorkspacePage() {
           </div>
           <div className="flex items-center gap-2">
             <button onClick={() => save(false)} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold px-4 py-2.5 text-[13px] hover:border-brand-300"><Save size={15} /> Save draft</button>
-            <button onClick={() => save(true)} className="inline-flex items-center gap-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-semibold px-4 py-2.5 text-[13px]"><Send size={15} /> Submit for review</button>
+            <button onClick={() => save(true)} className="inline-flex items-center gap-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-semibold px-4 py-2.5 text-[13px]"><Send size={15} /> Save and mark for review</button>
           </div>
         </div>
 
@@ -445,7 +445,7 @@ export function WorkspacePage() {
                     const base = 'mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-[14px] outline-none focus:border-brand-400'
                     const lab = <span className="text-[13px] font-medium text-slate-800">{f.label}{f.required && <span className="text-red-500"> *</span>}</span>
                     if (f.type === 'composition') return <div key={f.key} className="sm:col-span-2">{lab}<div className="mt-1"><CompositionEditor value={(v as FibreComposition) ?? emptyComposition()} onChange={set} sources={data.sources} /></div></div>
-                    if (f.type === 'sources') return <div key={f.key} className="sm:col-span-2">{lab}<SourcePicker value={(v as string[]) ?? []} onChange={set} sources={data.sources} /><p className="text-[11px] text-slate-400 mt-1">Multiple sources allowed; conflicting observations are kept as separate quantity records, never overwritten.</p></div>
+                    if (f.type === 'sources') return <div key={f.key} className="sm:col-span-2">{lab}<SourcePicker value={(v as string[]) ?? []} onChange={set} sources={data.sources} /><p className="text-[11px] text-slate-400 mt-1">Multiple sources allowed. Record a conflicting observation as a new quantity rather than editing this one; the prototype keeps no edit history.</p></div>
                     if (f.type === 'textarea') return <label key={f.key} className={wrap}>{lab}<textarea value={(v as string) ?? ''} onChange={(e) => set(e.target.value)} rows={3} className={base} /></label>
                     if (f.type === 'select') return <label key={f.key} className={wrap}>{lab}<select value={(v as string) ?? ''} onChange={(e) => set(e.target.value)} className={base}><option value="">—</option>{f.options!.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select></label>
                     if (f.type === 'ref') return <label key={f.key} className={wrap}>{lab}<select value={(v as string) ?? ''} onChange={(e) => set(e.target.value || undefined)} className={base}><option value="">{f.hint ?? '— none —'}</option>{(data[f.ref!] as unknown as Rec[]).map((r) => <option key={r.id as string} value={r.id as string}>{recordLabel(f.ref!, r)}</option>)}</select></label>

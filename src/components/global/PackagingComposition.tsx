@@ -32,6 +32,7 @@ function Row({
   indent?: boolean
   muted?: boolean
 }) {
+  const unknown = pct === 'Unknown'
   return (
     <div className={cn('flex items-baseline gap-3 py-2.5 border-b border-slate-100 last:border-0', indent && 'pl-5')}>
       <div className="min-w-0 flex-1">
@@ -39,7 +40,7 @@ function Row({
         {sub && <div className="text-[11px] text-slate-500 mt-0.5">{sub}</div>}
       </div>
       {tonnes && <div className="text-[12px] text-slate-500 tabular-nums whitespace-nowrap shrink-0">{tonnes}</div>}
-      <div className={cn('tabular-nums font-bold text-right whitespace-nowrap shrink-0', indent ? 'text-[15px] w-[52px]' : 'text-[19px] w-[62px]', muted ? 'text-slate-400' : 'text-slate-900')}>{pct}</div>
+      <div className={cn('tabular-nums font-bold text-right whitespace-nowrap shrink-0', indent ? 'text-[15px] w-[52px]' : 'text-[19px] w-[62px]', muted ? 'text-slate-400' : 'text-slate-900', unknown && 'text-[12px] font-semibold italic')}>{pct}</div>
       <div className="w-[92px] flex justify-end shrink-0">{quantity && <EvidenceBadge quantity={quantity} size="xs" label={badge} />}</div>
     </div>
   )
@@ -73,7 +74,7 @@ export function PackagingComposition({ total, recycled, virgin, certified, nextG
         <Row label="FSC / PEFC certified" pct={`${certOfVirgin}%`} tonnes={`~${certMt} Mt`} quantity={certified} badge="Est. range" sub="Share of virgin fibre, not of the total" indent />
         <Row label="Uncertified / controlled wood" pct={`${100 - certOfVirgin}%`} tonnes={`~${v - certMt} Mt`} sub="Remainder of virgin fibre" indent muted />
 
-        <Row label="Next Gen fibre" pct="0%" tonnes="~0 Mt" quantity={nextGen} muted sub={`Canopy reports ${nextGenCapacity.value} Mt capacity across paper, packaging and textiles`} />
+        <Row label="Next Gen fibre" pct="Unknown" quantity={nextGen} muted sub={`Canopy reports ${nextGenCapacity.value} Mt capacity across paper, packaging and textiles`} />
 
         <Row label="Non-fibre" pct={pct(nf)} tonnes={`~${nf} Mt`} quantity={nonFibre} muted sub="Starch, fillers, coatings and moisture" />
       </div>

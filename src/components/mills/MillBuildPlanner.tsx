@@ -32,10 +32,10 @@ const FEEDSTOCK: Record<RegionKey, Preset[]> = {
   europe: [{ id: 'eu_textile', label: 'EU-27 textile waste', feed: 'textile', quantityId: 'q_eu_textile_waste' }],
 }
 
-/** Which feedstock preset fits a candidate region best. */
+/** Which feedstock preset fits a candidate region's mill type. Panipat is a textile candidate, so it starts on textile waste. */
 const CANDIDATE_PRESET: Record<string, string> = {
   punjab: 'punjab',
-  haryana_panipat: 'haryana',
+  haryana_panipat: 'in_textile',
   up_ncr: 'up',
   tiruppur: 'in_textile',
   harihar: 'in_textile',
@@ -102,7 +102,7 @@ export function MillBuildPlanner({ region, candidate }: { region: RegionKey; can
   const yieldIsAssumption = preset.feed === 'textile'
 
   const brief = [
-    `Next Gen mill build: ${candidate ? `${candidate.name}, ${candidate.state}` : preset.label}`,
+    `Illustrative scenario, not a feasibility estimate. Next Gen mill build: ${candidate ? `${candidate.name}, ${candidate.state}` : preset.label}`,
     `Feedstock: ${fmtMt(feedstockMt)} Mt ${preset.label.toLowerCase()}${presetQ ? ` (${presetQ.period}, ${presetQ.status})` : ' (analyst estimate)'}`,
     `Assumptions: ${collect}% collectable, ${yieldPct}% yield, ${sizeKt} kt mills, $${usdPerT.toLocaleString('en-US')} per tonne`,
     `Result: ${r.mills} mill${r.mills === 1 ? '' : 's'}, ${fmtMt(r.capacityMt)} Mt a year of Next Gen pulp, about $${r.investmentBn.toFixed(1)} bn, ${fmtMt(r.ghgMt)} Mt CO2e avoided a year`,
@@ -125,7 +125,7 @@ export function MillBuildPlanner({ region, candidate }: { region: RegionKey; can
     <Card>
       <CardHeader
         title={<span className="flex items-center gap-2"><Calculator size={16} className="text-brand-600" /> Mill build planner</span>}
-        subtitle="How many mills the feedstock supports, what they cost and what they avoid. Change any assumption."
+        subtitle="An illustrative scenario: how many mills the feedstock could support under your assumptions, with rough cost and emissions. Not a feasibility or investment estimate."
         action={
           <button onClick={copy} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[12px] font-semibold text-slate-700 hover:border-brand-300">
             {copied ? <Check size={13} className="text-green-600" /> : <ClipboardCopy size={13} />} {copied ? 'Copied' : 'Copy investor summary'}
@@ -192,6 +192,7 @@ export function MillBuildPlanner({ region, candidate }: { region: RegionKey; can
 
         {/* outputs */}
         <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2 text-[11px] text-slate-500"><Pill tone="grey">Illustrative scenario</Pill> Results follow the assumptions on the left.</div>
           <div className="grid grid-cols-2 gap-2.5">
             <Big label="Mills of this size" value={String(r.mills)} tone={r.mills > 0 ? 'brand' : 'muted'} sub={r.mills === 0 && breakEven !== null ? `Needs ${breakEven.toFixed(1)}% collectable for one` : `${Math.round(r.feedstockPerMillKt).toLocaleString('en-US')} kt feedstock each`} />
             <Big label="Next Gen pulp a year" value={`${fmtMt(r.capacityMt)} Mt`} sub={`of ${fmtMt(r.pulpPotentialMt)} Mt potential`} />
@@ -219,7 +220,7 @@ export function MillBuildPlanner({ region, candidate }: { region: RegionKey; can
 
           <p className="text-[11px] text-slate-400 flex gap-1.5">
             <Info size={12} className="shrink-0 mt-0.5" />
-            {candidate ? <>Following <b className="text-slate-600">{candidate.name}</b> ({PATH_META[candidate.path].label.toLowerCase()}). </> : null}
+            {candidate ? <>Following <b className="text-slate-600">{candidate.name}</b> ({PATH_META[candidate.path].label.toLowerCase()}). {presetQ ? `The feedstock figure covers ${presetQ.scope}, not this locality alone. ` : ''}</> : null}
             The collectable share is the number that decides the answer and the one with the least data. Getting it is the first job of the next data layers.
           </p>
         </div>

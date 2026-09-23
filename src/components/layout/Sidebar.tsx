@@ -5,7 +5,7 @@ import { cn } from '@/lib/cn'
 const NAV = [
   { to: '/', label: 'Global overview', icon: Globe2, end: true },
   { to: '/companies', label: 'Companies', icon: Building2 },
-  { to: '/transparency', label: 'Producer transparency', icon: ShieldCheck },
+  { to: '/transparency', label: 'Disclosure coverage', icon: ShieldCheck },
   { to: '/risk', label: 'Supply risk', icon: ShieldAlert },
   { to: '/solutions', label: 'Canopy solutions', icon: Leaf },
   { to: '/mills', label: 'Next Gen mills', icon: Factory },

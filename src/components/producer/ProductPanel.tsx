@@ -37,7 +37,7 @@ export function ProductPanel({ company, product, onExplore, panelOpen }: { compa
   const compSource = data.sources.find((s) => s.id === product.composition.sourceIds[0])
 
   const gaps: { label: string; value: string }[] = [
-    { label: 'Product tonnage', value: volume && volume.value !== null ? `${volume.value} ${volume.unit}` : 'Unknown' },
+    { label: 'Product tonnage', value: volume && volume.value !== null ? `${volume.value} ${volume.unit}${volume.basis === 'capacity' ? ' (mill capacity proxy)' : ''}` : 'Unknown' },
     { label: 'Mill allocation', value: mill ? mill.name : millRel?.status === 'unresolved' ? 'To verify' : 'Unknown' },
     { label: 'Fibre origin', value: origin ? origin.name : 'Unknown' },
     { label: 'Customer relationships', value: 'Unknown' },
@@ -63,7 +63,7 @@ export function ProductPanel({ company, product, onExplore, panelOpen }: { compa
         </div>
 
         <div className="mt-4">
-          <div className="text-[13px] text-slate-500">Annual product volume</div>
+          <div className="text-[13px] text-slate-500">{volume?.basis === 'capacity' ? 'Mill capacity (proxy for product volume)' : 'Annual product volume'}</div>
           <div className="flex items-center gap-2">
             <span className={cn('text-lg font-semibold', volume?.value === null || !volume ? 'text-slate-500' : 'text-slate-900')}>{volume && volume.value !== null ? `${volume.value.toLocaleString()} ${volume.unit}` : 'Unknown'}</span>
             {volume && (

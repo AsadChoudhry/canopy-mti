@@ -58,8 +58,8 @@ export function NextGenMillsPage() {
       <div className="flex flex-col gap-5">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
           <div>
-            <h1 className="text-[32px] font-bold text-slate-900 tracking-tight leading-tight">Where Next Gen mills should go</h1>
-            <p className="text-[15px] text-slate-500 mt-1">Matching feedstock to demand in Canopy's first three scale-up regions, then sizing the build.</p>
+            <h1 className="text-[32px] font-bold text-slate-900 tracking-tight leading-tight">Where to look first for Next Gen mills</h1>
+            <p className="text-[15px] text-slate-500 mt-1">Which regions have enough evidence to validate first, in Canopy's first three scale-up regions, and what a build could look like under stated assumptions.</p>
           </div>
           <div className="flex rounded-xl bg-cream-200 p-1 text-[13px] font-semibold overflow-x-auto" role="tablist">
             {(Object.keys(REGION_META) as RegionKey[]).map((k) => (
@@ -81,7 +81,7 @@ export function NextGenMillsPage() {
             <div className="text-[11px] uppercase tracking-wide font-semibold text-brand-700">Decision this supports</div>
             <p className="text-[15px] font-semibold text-slate-900 mt-0.5">{meta.question}</p>
             <p className="text-[12px] text-slate-600 mt-1">
-              Canopy's Next Gen plan commits to "identify ideal mill site locations". This view makes a first cut from verified data and shows which data would sharpen it.
+              Canopy's Next Gen plan commits to "identify ideal mill site locations". This view ranks regions by how much evidence exists, to decide where to validate next. It does not rank investment suitability.
             </p>
           </div>
           <div className="flex flex-wrap gap-1.5 md:justify-end">
@@ -116,9 +116,9 @@ export function NextGenMillsPage() {
 
           <Card>
             <CardHeader
-              title="Ranking"
-              subtitle="Quantified = 2 points, known but not quantified = 1, not loaded = 0. Weight each factor."
-              action={<Pill tone="inferred">First cut</Pill>}
+              title="Evidence coverage"
+              subtitle="How much evidence is loaded for each region, not how suitable it is. Quantified = 2, known but not quantified = 1, not loaded = 0."
+              action={<Pill tone="inferred">Research triage</Pill>}
             />
             <div className="px-5 pb-5">
               <div className="rounded-xl border border-slate-200 bg-white px-4 py-2 mb-3">
@@ -165,7 +165,7 @@ export function NextGenMillsPage() {
               </ol>
               <p className="text-[11px] text-slate-400 mt-2 flex gap-1.5">
                 <Info size={12} className="shrink-0 mt-0.5" />
-                The score counts evidence, not suitability. A low score often means data is missing, which is itself a finding.
+                A high score means a region is ready to validate, not that a mill belongs there. A low score often means data is missing, which is itself a finding.
               </p>
             </div>
           </Card>

@@ -30,7 +30,7 @@ const ITEMS: Item[] = [
     users: ['Pack4Good', 'CanopyStyle'],
     data: ['Company reports', 'EPD content declarations', 'EUDR origin declarations', 'FAOSTAT'],
     owner: 'Data & Research, with campaign leads',
-    measure: 'Share of engaged producers with a traced product (8 of 8 evidence checks).',
+    measure: 'Share of engaged producers with a traced product (8 of 8 evidence fields filled).',
   },
   {
     title: 'Hot Button tracker and 2027 criteria test',
@@ -66,16 +66,16 @@ const ITEMS: Item[] = [
     measure: 'Transition panel shows real leads instead of illustrative ones.',
   },
   {
-    title: 'Pack4Good producer transparency score',
+    title: 'Pack4Good disclosure coverage',
     quarter: 'Q2',
     built: true,
     to: '/transparency',
     remaining: 'More producers traced to the same depth as Metsä Board; consultation on weights.',
-    decision: 'Which packaging producers lead or lag, as Hot Button does for viscose.',
+    decision: 'Which packaging producers to engage first, and what to ask each to disclose.',
     users: ['Pack4Good', 'Brand partners', 'Producers'],
     data: ['Evidence checks from product tracing', 'Certification data', 'Company disclosures'],
     owner: 'Pack4Good, with Data & Research',
-    measure: 'First scored list of packaging producers published to brand partners.',
+    measure: 'Method agreed with Pack4Good; 10 producers researched to the same depth.',
   },
   {
     title: 'Brand demand against Next Gen supply',

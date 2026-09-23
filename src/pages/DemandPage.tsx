@@ -6,7 +6,7 @@ import { EvidenceBadge } from '@/components/ui/EvidenceBadge'
 import { Pill } from '@/components/ui/Pill'
 import { useStore } from '@/store/StoreContext'
 import { HB_2026_HEADLINES } from '@/data/hotbutton'
-import { PIPELINE } from '@/data/mills'
+import { PIPELINE, STAGE_META } from '@/data/mills'
 import { cn } from '@/lib/cn'
 
 /** Who has promised to buy Next Gen, and what is missing before it counts as demand. None gives tonnes. */
@@ -52,7 +52,7 @@ export function DemandPage() {
         </div>
 
         <Card>
-          <CardHeader title="The calculation" subtitle="Move the slider. Everything else comes from sources." />
+          <CardHeader title="The calculation" subtitle="Move the slider. The other inputs are sourced figures or stated assumptions (mill size, which projects count, pulp and fibre tonnes treated as equal)." />
           <div className="px-5 pb-5 flex flex-col gap-4">
             <div className="rounded-xl border border-brand-200 bg-brand-50 px-4 py-3">
               <div className="flex items-center justify-between gap-3 text-[14px] font-semibold text-slate-900">
@@ -72,9 +72,9 @@ export function DemandPage() {
               <Op icon={<Minus size={16} />} />
               <Step n="2" title="Made today" value={`${fmt(today)} Mt`} sub={<span className="inline-flex items-center gap-1">MMCF from recycled material in 2024 ({recShare?.value}%) {recT && <EvidenceBadge quantity={recT} size="xs" label="" className="px-1" />}</span>} />
               <Op icon={<Minus size={16} />} />
-              <Step n="3" title="Being built" value={`${fmt(buildingMt)} Mt`} sub={`${building.map((p) => p.operator).join(', ')}. See Next Gen mills.`} />
+              <Step n="3" title="Named projects" value={`${fmt(buildingMt)} Mt`} sub={building.map((p) => `${p.operator} ${p.tonnes / 1000} kt, ${STAGE_META[p.stage].label.toLowerCase()}`).join(' · ')} />
               <Op icon={<Equal size={16} />} />
-              <Step n="4" title="Still missing" value={`${fmt(gap)} Mt`} sub={gap > 0 ? 'No mill is planned for this yet' : 'Covered by today\'s supply and the pipeline'} tone={gap > 0 ? 'alert' : 'ok'} />
+              <Step n="4" title="Still missing" value={`${fmt(gap)} Mt`} sub={gap > 0 ? 'Not covered by the named projects' : 'Covered by today\'s supply and the named projects'} tone={gap > 0 ? 'alert' : 'ok'} />
             </div>
 
             <div className="grid md:grid-cols-[1fr_auto] gap-4 items-center rounded-xl border border-slate-200 bg-white px-4 py-3">
@@ -87,22 +87,22 @@ export function DemandPage() {
               </div>
               <div className="text-right">
                 <div className="text-[36px] font-bold text-slate-900 tabular-nums leading-none">{mills}</div>
-                <div className="text-[12px] text-slate-500">new mills needed</div>
+                <div className="text-[12px] text-slate-500">mills, in this scenario</div>
               </div>
             </div>
 
             <div>
               <div className="flex justify-between text-[12px] text-slate-600">
-                <span>How much of the wanted fibre exists or is being built</span>
+                <span>How much of the wanted fibre exists today or is in named projects</span>
                 <span className="font-semibold text-slate-900 tabular-nums">{coveredPct < 1 ? coveredPct.toFixed(1) : coveredPct.toFixed(0)}%</span>
               </div>
               <div className="h-3 rounded-full bg-brand-100 overflow-hidden mt-1 flex">
                 <div className="h-full bg-brand-700" style={{ width: `${Math.min(100, (today / Math.max(wanted, 1e-9)) * 100)}%` }} title="Made today" />
-                <div className="h-full bg-brand-400" style={{ width: `${Math.max(0, coveredPct - Math.min(100, (today / Math.max(wanted, 1e-9)) * 100))}%` }} title="Being built" />
+                <div className="h-full bg-brand-400" style={{ width: `${Math.max(0, coveredPct - Math.min(100, (today / Math.max(wanted, 1e-9)) * 100))}%` }} title="Named projects" />
               </div>
               <div className="flex gap-4 mt-1 text-[11px] text-slate-500">
                 <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-brand-700" /> Made today</span>
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-brand-400" /> Being built</span>
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-brand-400" /> Named projects</span>
                 <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-brand-100" /> Missing</span>
               </div>
             </div>

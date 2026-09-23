@@ -2,8 +2,8 @@ import type { Company, Store } from '@/data/model'
 import { accountProduct } from './accounting'
 
 /**
- * Pack4Good producer transparency score: a Hot Button-style score for packaging producers,
- * computed only from what is loaded in the evidence store. It scores disclosure, not forest outcomes.
+ * Pack4Good disclosure coverage: how much of a packaging producer's sourcing this prototype has found
+ * in public sources. It measures research coverage and disclosure, not forest outcomes, and is not a rating.
  */
 
 export interface TCriterion {
@@ -20,18 +20,20 @@ export const T_CRITERIA: TCriterion[] = [
   { key: 'mills', label: 'Mills named', max: 4, what: 'At least one producing mill is named in a source.', ask: 'Name the mills and their capacities.' },
   { key: 'origin', label: 'Wood origin declared', max: 4, what: 'Company-level sourcing countries are confirmed.', ask: 'Publish wood sourcing countries with volumes.' },
   { key: 'certified', label: 'Certified share disclosed', max: 4, what: 'FSC or PEFC certified share of wood is reported.', ask: 'Report the certified share of wood fibre, separately from Controlled Wood.' },
-  { key: 'product', label: 'Product fibre traced', max: 6, what: 'Best product\'s share of the eight evidence checks passed.', ask: 'Share a content declaration (EPD) and mill for the products brand partners buy.' },
+  { key: 'product', label: 'Product fibre traced', max: 6, what: 'Best product\'s share of the eight evidence fields filled.', ask: 'Share a content declaration (EPD) and mill for the products brand partners buy.' },
   { key: 'productOrigin', label: 'Product origin traced', max: 4, what: 'Wood origin is declared for at least one product.', ask: 'Declare origin per product, as the EUDR due diligence statement already requires.' },
   { key: 'split', label: 'Fibre split per product', max: 4, what: 'Virgin, recycled and Next Gen shares stated for a product.', ask: 'State virgin, recycled and Next Gen shares per product.' },
 ]
 
 export const T_MAX = T_CRITERIA.reduce((a, c) => a + c.max, 0)
 
-export type TBand = 'leading' | 'partial' | 'opaque'
+/** Bands describe how much disclosure this prototype has found, not a verdict on the company. */
+export type TBand = 'leading' | 'partial' | 'opaque' | 'not_researched'
 export const T_BAND_META: Record<TBand, { label: string; colour: string; range: string }> = {
-  leading: { label: 'Leading', colour: '#00614f', range: `22 to ${T_MAX}` },
-  partial: { label: 'Partial', colour: '#f2b53a', range: '12 to 21' },
-  opaque: { label: 'Opaque', colour: '#d14343', range: '0 to 11' },
+  leading: { label: 'High coverage', colour: '#00614f', range: `22 to ${T_MAX}` },
+  partial: { label: 'Partial coverage', colour: '#e09a12', range: '12 to 21' },
+  opaque: { label: 'Low coverage', colour: '#4f5964', range: '0 to 11' },
+  not_researched: { label: 'Not yet researched', colour: '#6c7783', range: 'no mills, products or origins loaded' },
 }
 
 export interface TResult {
@@ -69,7 +71,7 @@ export function transparencyScore(c: Company, store: Store): TResult {
   const scored = products.map((p) => ({ p, s: accountProduct(p, store) })).sort((a, b) => b.s.passed - a.s.passed)
   const best = scored[0]
   points.product = best ? +((best.s.passed / best.s.total) * 6).toFixed(1) : 0
-  detail.product = best ? `${best.p.name}: ${best.s.passed} of ${best.s.total} checks` : 'No product loaded'
+  detail.product = best ? `${best.p.name}: ${best.s.passed} of ${best.s.total} fields filled` : 'No product loaded'
 
   const withOrigin = products.filter((p) => p.originIds?.length)
   points.productOrigin = withOrigin.length ? 4 : 0
@@ -80,7 +82,8 @@ export function transparencyScore(c: Company, store: Store): TResult {
   detail.split = split.length ? `${split.length} of ${products.length} products` : 'Not stated'
 
   const total = +Object.values(points).reduce((a, b) => a + b, 0).toFixed(1)
-  const band: TBand = total >= 22 ? 'leading' : total >= 12 ? 'partial' : 'opaque'
+  const researched = mills.length > 0 || products.length > 0 || origins.length > 0
+  const band: TBand = !researched ? 'not_researched' : total >= 22 ? 'leading' : total >= 12 ? 'partial' : 'opaque'
   return { company: c, points, detail, total, band, bestProduct: best?.p.id }
 }
 

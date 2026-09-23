@@ -5,6 +5,8 @@ export interface AccountCheck {
   label: string
   ok: boolean
   detail: string
+  /** Set when the check passes on a proxy rather than product-level evidence. */
+  proxy?: string
 }
 
 export interface AccountScore {
@@ -54,18 +56,21 @@ export function accountProduct(product: Product, store: Store): AccountScore {
       label: 'Wood origin declared',
       ok: !!product.originIds?.length,
       detail: product.originIds?.length ? `${product.originIds.length} origin countries declared` : 'Fibre origin unknown',
+      proxy: product.originIds?.length ? 'Country level, not forest or plot' : undefined,
     },
     {
       key: 'certified',
       label: 'Certified share known',
       ok: !!certified && certified.value !== null,
       detail: certified && certified.value !== null ? `${certified.value}% certified, company-wide` : 'Certified share unknown',
+      proxy: certified && certified.value !== null && certified.subjectType !== 'product' ? 'Company-wide figure, not this product' : undefined,
     },
     {
       key: 'volume',
       label: 'Product volume known',
       ok: !!volume && volume.value !== null,
       detail: volume && volume.value !== null ? `${volume.value} ${volume.unit} (${volume.status})` : 'Annual volume unknown',
+      proxy: volume && volume.value !== null && volume.basis === 'capacity' ? 'Mill capacity, not measured product output' : undefined,
     },
     {
       key: 'share',

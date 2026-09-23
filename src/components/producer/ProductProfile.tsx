@@ -51,7 +51,7 @@ export function ProductProfile({ company, product, onOpenTransition }: { company
               {volume && volume.value !== null ? `${volume.value} ${volume.unit}` : 'Unknown'}
             </div>
             <div className="text-[11px] text-slate-500 mt-1.5 flex items-center gap-1.5">
-              Annual volume {volume && <EvidenceBadge quantity={volume} size="xs" label="" className="px-1" />}
+              {volume?.basis === 'capacity' ? 'Mill capacity (volume proxy)' : 'Annual volume'} {volume && <EvidenceBadge quantity={volume} size="xs" label="" className="px-1" />}
             </div>
           </div>
           <div className="px-5">
@@ -69,10 +69,11 @@ export function ProductProfile({ company, product, onOpenTransition }: { company
       <Card className={cn('p-4', score.level === 'full' ? 'border-green-200 bg-green-50' : score.level === 'partial' ? 'border-amber-200 bg-amber-50' : 'border-slate-200')}>
         <div className="flex items-center justify-between gap-3 mb-3">
           <div className="text-[13px] font-semibold text-slate-900">
-            Evidence checks: {score.passed} of {score.total}
+            Evidence fields filled: {score.passed} of {score.total}
+            {score.checks.some((c) => c.ok && c.proxy) && <span className="ml-2 text-[11px] font-normal text-amber-600">· {score.checks.filter((c) => c.ok && c.proxy).length} filled with a proxy</span>}
           </div>
           <span className={cn('rounded-full px-2.5 py-0.5 text-[11px] font-semibold', score.level === 'full' ? 'bg-green-500 text-white' : score.level === 'partial' ? 'bg-amber-400 text-white' : 'bg-slate-300 text-slate-700')}>
-            {score.level === 'full' ? 'Fully accounted' : score.level === 'partial' ? 'Partly accounted' : 'Thin evidence'}
+            {score.level === 'full' ? 'All fields filled' : score.level === 'partial' ? 'Some fields filled' : 'Thin evidence'}
           </span>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-1.5">
@@ -82,6 +83,7 @@ export function ProductProfile({ company, product, onOpenTransition }: { company
               <div className="min-w-0">
                 <div className={cn('font-medium', c.ok ? 'text-slate-800' : 'text-slate-500')}>{c.label}</div>
                 <div className="text-slate-500 leading-snug">{c.detail}</div>
+                {c.ok && c.proxy && <div className="text-amber-600 leading-snug">Proxy: {c.proxy}</div>}
               </div>
             </div>
           ))}

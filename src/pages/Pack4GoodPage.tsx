@@ -20,18 +20,18 @@ export function Pack4GoodPage() {
   const missed = T_CRITERIA.map((c) => ({ c, n: results.filter((r) => r.points[c.key] < c.max * 0.5).length })).sort((a, b) => b.n - a.n)
 
   return (
-    <AppShell crumbs={[{ label: 'Producer transparency' }]}>
+    <AppShell crumbs={[{ label: 'Disclosure coverage' }]}>
       <div className="flex flex-col gap-5">
         <div>
-          <h1 className="text-[32px] font-bold text-slate-900 tracking-tight leading-tight">Packaging producer transparency</h1>
-          <p className="text-[15px] text-slate-500 mt-1">A Hot Button-style score for Pack4Good, built from the evidence already traced in this tool.</p>
+          <h1 className="text-[32px] font-bold text-slate-900 tracking-tight leading-tight">Packaging producer disclosure coverage</h1>
+          <p className="text-[15px] text-slate-500 mt-1">How much of each producer's sourcing this prototype has found in public sources. Research coverage, not a rating of the company.</p>
         </div>
 
         <div className="rounded-2xl border border-brand-100 bg-brand-50 px-5 py-4 grid md:grid-cols-[1fr_auto] gap-4 items-center">
           <div>
             <div className="text-[11px] uppercase tracking-wide font-semibold text-brand-700">Decision this supports</div>
-            <p className="text-[15px] font-semibold text-slate-900 mt-0.5">Which packaging producers do brand partners reward, and what does Pack4Good ask the rest for?</p>
-            <p className="text-[12px] text-slate-600 mt-1">Hot Button moved the viscose sector by scoring it in public. Packaging has no equivalent yet. The score recalculates whenever evidence is added in the Data workspace.</p>
+            <p className="text-[15px] font-semibold text-slate-900 mt-0.5">Which packaging producers should Pack4Good engage first, and what should it ask each one to disclose?</p>
+            <p className="text-[12px] text-slate-600 mt-1">Research depth is uneven: a low score can mean I have not looked yet, which the "Not yet researched" label shows. A public, Hot Button-style rating would need equal research for every producer and a method agreed with Pack4Good first.</p>
           </div>
           <div className="flex flex-wrap gap-1.5 md:justify-end">
             {['Pack4Good', 'Brand partners', 'Producers'].map((u) => <Pill key={u} tone="forest"><Users size={11} /> {u}</Pill>)}
@@ -41,8 +41,8 @@ export function Pack4GoodPage() {
         <div className="grid md:grid-cols-3 gap-4">
           <Card className="px-5 py-4">
             <div className="text-[26px] font-bold text-slate-900 tabular-nums leading-none">{leading} of {results.length}</div>
-            <div className="text-[13px] text-slate-600 mt-1.5">Producers scored Leading</div>
-            <div className="text-[11px] text-slate-400 mt-0.5">Scores run 0 to {T_MAX}. Leading is 22 or more.</div>
+            <div className="text-[13px] text-slate-600 mt-1.5">Producers with high coverage</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">Scores run 0 to {T_MAX}. High coverage is 22 or more.</div>
           </Card>
           <Card className="px-5 py-4">
             <div className="text-[18px] font-bold text-slate-900 leading-tight">{missed[0]?.c.label}</div>
@@ -50,7 +50,7 @@ export function Pack4GoodPage() {
             <div className="text-[11px] text-slate-400 mt-0.5">The sector-wide ask for the next Pack4Good letter.</div>
           </Card>
           <Card className="px-5 py-4">
-            <div className="text-[13px] text-slate-600 flex gap-1.5"><Info size={14} className="shrink-0 mt-0.5 text-slate-400" /> Scores disclosure, not forest outcomes. A Leading producer can still source from high-risk forests; that is the Supply risk view.</div>
+            <div className="text-[13px] text-slate-600 flex gap-1.5"><Info size={14} className="shrink-0 mt-0.5 text-slate-400" /> Measures disclosure found, not forest outcomes. A producer with high coverage can still source from high-risk forests; that is the Supply risk view.</div>
           </Card>
         </div>
 
@@ -74,7 +74,7 @@ export function Pack4GoodPage() {
                       ))}
                     </span>
                     <span className="w-[36px] sm:w-[52px] text-right text-[14px] font-bold tabular-nums text-slate-900">{r.total}</span>
-                    <span className="hidden sm:inline-block w-[76px] shrink-0 rounded-full text-[10px] font-semibold px-2 py-0.5 text-white text-center" style={{ background: b.colour }}>{b.label}</span>
+                    <span className="hidden sm:inline-block w-[118px] shrink-0 rounded-full text-[10px] font-semibold px-2 py-0.5 text-white text-center" style={{ background: b.colour }}>{b.label}</span>
                     <ChevronDown size={14} className={cn('text-slate-400 transition-transform', isOpen && 'rotate-180')} />
                   </button>
                   {isOpen && (
@@ -97,7 +97,9 @@ export function Pack4GoodPage() {
                       <div className="flex flex-col gap-2">
                         <div className="rounded-xl bg-cream-100 border border-cream-200 px-3 py-2.5">
                           <div className="text-[11px] uppercase tracking-wide font-semibold text-slate-400 flex items-center gap-1.5"><MessageSquareText size={12} /> Engagement ask</div>
-                          {T_CRITERIA.filter((c) => r.points[c.key] < c.max).length ? (
+                          {r.band === 'not_researched' ? (
+                            <p className="text-[12px] text-slate-700 mt-1">Not researched yet in this prototype. Research this producer to the same depth as the others before making any ask.</p>
+                          ) : T_CRITERIA.filter((c) => r.points[c.key] < c.max).length ? (
                             <ol className="mt-1 list-decimal pl-4 text-[12px] text-slate-700 flex flex-col gap-1">
                               {T_CRITERIA.filter((c) => r.points[c.key] < c.max)
                                 .sort((a, b) => b.max - r.points[b.key] - (a.max - r.points[a.key]))
@@ -133,7 +135,7 @@ export function Pack4GoodPage() {
                 ))}
               </tbody>
             </table>
-            <p className="text-[11px] text-slate-400 mt-2">A draft method for consultation with Pack4Good and brand partners before anything is published. Bands: {Object.values(T_BAND_META).map((b) => `${b.label} ${b.range}`).join(' · ')}.</p>
+            <p className="text-[11px] text-slate-400 mt-2">A draft method for consultation with Pack4Good before any producer sees a result. Bands: {Object.values(T_BAND_META).map((b) => `${b.label} ${b.range}`).join(' · ')}.</p>
           </div>
         </Card>
       </div>

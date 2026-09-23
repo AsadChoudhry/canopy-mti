@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/Card'
 import { FibreBar } from '@/components/ui/FibreBar'
 import { EvidenceBadge } from '@/components/ui/EvidenceBadge'
 import { Pill } from '@/components/ui/Pill'
-import { computeScenario, compositionTotal, fmtT } from '@/lib/scenario'
+import { computeScenario, compositionTotal, fmtT, toTonnes } from '@/lib/scenario'
 import { cn } from '@/lib/cn'
 
 type Tab = 'alternatives' | 'scenario' | 'evidence'
@@ -326,7 +326,7 @@ function ScenarioEditor({ company, product }: { company: Company; product: Produ
       <div>
         <div className="text-[12px] font-semibold text-slate-800 mb-1">Assumptions</div>
         <div className="grid sm:grid-cols-2 gap-2">
-          <NumField label="Product volume (assumption)" value={editing.assumptions.productVolumeT} onChange={(v) => setEditing({ ...editing, assumptions: { ...editing.assumptions, productVolumeT: v } })} unit="t/yr" hint={vol && vol.value !== null ? `Observed: ${vol.value} ${vol.unit}` : 'Observed volume: unknown'} />
+          <NumField label="Product volume (assumption)" value={editing.assumptions.productVolumeT} onChange={(v) => setEditing({ ...editing, assumptions: { ...editing.assumptions, productVolumeT: v } })} unit="t/yr" hint={vol && vol.value !== null ? `Blank uses the loaded ${vol.value} ${vol.unit}${vol.basis === 'capacity' ? ' mill capacity (a proxy, not measured product output)' : ''}${toTonnes(vol) !== null ? ` = ${toTonnes(vol)!.toLocaleString('en-US')} t` : ''}` : 'Observed volume: unknown'} />
           <NumField label="Fibre share of product mass" value={editing.assumptions.fibreShareOfMass === null ? null : Math.round(editing.assumptions.fibreShareOfMass * 100)} onChange={(v) => setEditing({ ...editing, assumptions: { ...editing.assumptions, fibreShareOfMass: v === null ? null : v / 100 } })} unit="%" hint="Finished-product tonnes are not fibre tonnes" />
         </div>
         <label className="block text-[12px] mt-2">
