@@ -6,7 +6,7 @@ const byRisk = capacityByRisk()
 const green = greenShirtCapacity()
 const scored = HOT_BUTTON_2025.filter((x) => x.total !== null)
 
-export const FASHION_SOURCES: Source[] = [
+export const FASHION_SOURCES_BASE: Source[] = [
   {
     id: 'src_hotbutton_2025',
     title: 'The Hot Button Report 2025, producer matrix',
@@ -97,6 +97,58 @@ export const LENZING_COMPANY: Company = {
     { text: 'All wood used at the two European pulp sites derives from PEFC and FSC certified or controlled sources, confirmed by 2025 audits.', sourceIds: ['src_lenzing_pulp_2025'], scope: 'Austria and Czech Republic, 2025' },
     { text: 'Self-sufficiency in dissolving wood pulp was increased to significantly more than the 75 percent targeted by the corporate strategy.', sourceIds: ['src_lenzing_pulp_2025'], scope: 'Company-wide, 2025' },
   ],
+  notes: 'Significantly scale the use of Next Generation Solutions, continue proactive use of ForestMapper to prevent Ancient and Endangered Forest sourcing, and increase procurement of FSC 100% or FSC Mix certified inputs.',
+}
+
+/* ------------------------------------------------------------------ */
+/* Sateri: the largest producer, and the one carrying known risk        */
+/* ------------------------------------------------------------------ */
+
+export const SATERI_SOURCE: Source = {
+  id: 'src_hotbutton_sateri',
+  title: 'Hot Button Report, Sateri (part of the RGE Group) producer profile',
+  publisher: 'Canopy',
+  url: 'https://canopyplanet.org/tools-and-resources/hot-button-report/sateri-rge-group',
+  page: 'Producer profile',
+  accessDate: ACCESS,
+  accessed: true,
+  passage:
+    'Canopy states that Sateri continues to source from high-risk suppliers and that a significant share of its pulp comes from sister companies. "APRIL continues to operate on carbon-rich, drained tropical peatlands." Canopy calls on Sateri to encourage APRIL to "Address the legacy of forest conversion and associated environmental impacts by increasing restoration and protection of high-carbon peatlands" and to "Set targets and timelines to retire and restore high-carbon peatlands within concession boundaries." Sateri Finex is one of ten established commercial lines of Next Gen made with discarded textiles.',
+  limitations: 'The live profile page is maintained continuously and shows a later report year than the 2025 matrix. It gives a total of 20.5 out of 40 and a capacity share of 13 to 14%, where the 2025 matrix gives 21.0 and 24.00%. Scores and capacity in this workspace come from the 2025 matrix; only the commentary is taken from the profile page.',
+  reviewStatus: 'needs_review',
+  kind: 'canopy_directory',
+}
+
+export const SATERI_QUANTITIES: Quantity[] = [
+  { id: 'q_sateri_hb_total', subjectType: 'company', subjectId: 'sateri', metric: 'Hot Button score', value: 21.0, unit: 'of 40', period: '2025', scope: 'Sateri, all MMCF operations', basis: 'other', denominator: 'Maximum 40 buttons', status: 'reported', sourceIds: ['src_hotbutton_2025'], note: 'Light green with red: a green-range score carrying known risk in supply. Includes a deduction of 3.0 for high risk sourcing.' },
+  { id: 'q_sateri_capacity_share', subjectType: 'company', subjectId: 'sateri', metric: 'Share of global MMCF production capacity', value: 24.0, unit: '%', period: '2025', scope: 'Sateri against world MMCF capacity', basis: 'capacity', denominator: 'Total global MMCF capacity', status: 'reported', sourceIds: ['src_hotbutton_2025'], note: 'The largest single share in the matrix. Excluding Sateri is what takes green shirt capacity from 77.7% to 53.7%.' },
+  { id: 'q_sateri_deduction', subjectType: 'company', subjectId: 'sateri', metric: 'High risk sourcing deduction', value: -3.0, unit: 'buttons', period: '2025', scope: 'Sateri', basis: 'other', denominator: 'Deduction range 0 to minus 5', status: 'reported', sourceIds: ['src_hotbutton_2025', 'src_hotbutton_sateri'], note: 'Applied where sourcing from Ancient and Endangered Forests is documented.' },
+]
+
+export const SATERI_COMPANY: Company = {
+  id: 'sateri',
+  name: 'Sateri (RGE Group)',
+  type: 'producer',
+  stream: 'fashion',
+  sector: 'Producer · Man-made cellulosic fibre',
+  hq: 'Shanghai, China',
+  logoText: 'Sateri',
+  logoColour: '#0f7b3e',
+  description: 'The largest MMCF producer in the Hot Button matrix at 24% of global capacity, and the only one carrying known risk in supply. Produces viscose staple fibre and lyocell.',
+  sourceIds: ['src_hotbutton_2025', 'src_hotbutton_sateri'],
+  mapping: {
+    supplierIdentified: 'confirmed',
+    millIdentified: 'unresolved',
+    originTraced: 'unresolved',
+    note: 'Canopy records a significant share of pulp coming from sister companies within the RGE group. Mills and forest origin are not loaded here.',
+  },
+  totalOutputQuantityId: undefined,
+  globalComparisonQuantityId: 'q_sateri_capacity_share',
+  sourcingStatements: [
+    { text: 'Canopy states that Sateri continues to source from high-risk suppliers, and that a significant share of its pulp comes from sister companies.', sourceIds: ['src_hotbutton_sateri'], scope: 'Hot Button producer profile' },
+    { text: 'APRIL continues to operate on carbon-rich, drained tropical peatlands.', sourceIds: ['src_hotbutton_sateri'], scope: 'Hot Button producer profile' },
+  ],
+  notes: 'Canopy asks Sateri to encourage APRIL to address the legacy of forest conversion by increasing restoration and protection of high-carbon peatlands, and to set targets and timelines to retire and restore high-carbon peatlands within concession boundaries.',
 }
 
 export const FASHION_RELATIONSHIPS: Relationship[] = FASHION_FACILITIES.map((f) => ({
@@ -109,3 +161,5 @@ export const FASHION_RELATIONSHIPS: Relationship[] = FASHION_FACILITIES.map((f) 
   status: 'confirmed',
   sourceIds: ['src_lenzing_pulp_2025'],
 }))
+
+export const FASHION_SOURCES: Source[] = [...FASHION_SOURCES_BASE, SATERI_SOURCE]

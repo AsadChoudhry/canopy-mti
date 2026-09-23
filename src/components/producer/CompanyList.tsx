@@ -16,11 +16,12 @@ export function CompanyList({ activeId }: { activeId?: string }) {
       .filter((c) => c.name.toLowerCase().includes(q.toLowerCase()) || c.sector.toLowerCase().includes(q.toLowerCase()))
       .map((c) => {
         const out = data.quantities.find((x) => x.id === c.totalOutputQuantityId)
+        const share = data.quantities.find((x) => x.id === c.globalComparisonQuantityId)
         const coverage = [c.mapping.supplierIdentified, c.mapping.millIdentified, c.mapping.originTraced].filter((s) => s === 'confirmed').length
         const mapped = data.products
           .filter((p) => p.companyId === c.id)
           .reduce((a, p) => a + (data.quantities.find((q) => q.id === p.shareOfCompanyQuantityId)?.value ?? 0), 0)
-        return { c, out, coverage, mapped }
+        return { c, out, share, coverage, mapped }
       })
     list.sort((a, b) => {
       if (sort === 'name') return a.c.name.localeCompare(b.c.name)
@@ -56,7 +57,7 @@ export function CompanyList({ activeId }: { activeId?: string }) {
           <div key={stream}>
             <div className="text-[10px] uppercase tracking-wide font-semibold text-slate-400 border-t border-slate-200 pt-2 pb-1">{stream}</div>
             <ul className="flex flex-col gap-1">
-              {group.map(({ c, out, coverage, mapped }) => (
+              {group.map(({ c, out, share, coverage, mapped }) => (
                 <li key={c.id}>
                   <Link
                     to={`/companies/${c.id}`}
@@ -70,7 +71,11 @@ export function CompanyList({ activeId }: { activeId?: string }) {
                       </div>
                     </div>
                     <span className={cn('text-[12px] font-semibold tabular-nums shrink-0', activeId === c.id ? 'text-brand-700' : 'text-slate-500')}>
-                      {c.type === 'brand' ? 'n/a' : out && out.value !== null ? `${out.value} ${out.unit}` : 'Unknown'}
+                      {out && out.value !== null
+                        ? `${out.value} ${out.unit}`
+                        : share && share.value !== null
+                          ? `${share.value}% cap.`
+                          : 'n/a'}
                     </span>
                   </Link>
                 </li>

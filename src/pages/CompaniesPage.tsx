@@ -13,11 +13,10 @@ import { EvidenceBadge } from '@/components/ui/EvidenceBadge'
 import { Card } from '@/components/ui/Card'
 import { useStore } from '@/store/StoreContext'
 import type { Company, Product } from '@/data/model'
-import { BrandCompanyView } from './BrandCompanyView'
 import { cn } from '@/lib/cn'
 
 export function CompaniesPage() {
-  const { companyId, tab } = useParams()
+  const { companyId } = useParams()
   const [params, setParams] = useSearchParams()
   const { data } = useStore()
 
@@ -40,14 +39,6 @@ export function CompaniesPage() {
   const hbRow = HOT_BUTTON_2025.find((h) => h.id === companyId)
   const out = data.quantities.find((q) => q.id === company?.totalOutputQuantityId)
   const share = data.quantities.find((q) => q.id === company?.globalComparisonQuantityId)
-
-  if (company?.type === 'brand') {
-    return (
-      <AppShell crumbs={crumbs} back="/companies">
-        <BrandCompanyView companyId={company.id} tab={tab ?? 'overview'} />
-      </AppShell>
-    )
-  }
 
   return (
     <AppShell crumbs={crumbs}>
@@ -93,12 +84,14 @@ export function CompaniesPage() {
                     </div>
                   </div>
                   <div className="flex items-stretch divide-x divide-slate-200 shrink-0">
-                    <div className="px-5 first:pl-0">
-                      <div className="text-[24px] font-bold text-slate-900 leading-none whitespace-nowrap">{out && out.value !== null ? `${out.value} ${out.unit}` : 'Unknown'}</div>
-                      <div className="text-[12px] text-slate-500 mt-1.5 flex items-center gap-2">
-                        Output, {out?.period ?? '—'} {out && <EvidenceBadge quantity={out} size="xs" label={out.status === 'calculated' ? 'Calculated' : 'Reported'} />}
+                    {out && out.value !== null && (
+                      <div className="px-5 first:pl-0">
+                        <div className="text-[24px] font-bold text-slate-900 leading-none whitespace-nowrap">{out.value} {out.unit}</div>
+                        <div className="text-[12px] text-slate-500 mt-1.5 flex items-center gap-2">
+                          Output, {out.period} <EvidenceBadge quantity={out} size="xs" label={out.status === 'calculated' ? 'Calculated' : 'Reported'} />
+                        </div>
                       </div>
-                    </div>
+                    )}
                     <div className="px-5">
                       <div className="text-[24px] font-bold text-slate-900 leading-none">{share && share.value !== null ? `~${share.value}%` : 'Unknown'}</div>
                       <div className="text-[12px] text-slate-500 mt-1.5 flex items-center gap-2">
@@ -112,10 +105,12 @@ export function CompaniesPage() {
                 {hbRow ? (
                   <>
                     <HotButtonScorecard row={hbRow} />
-                    <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-[12px] text-slate-700">
-                      <div className="font-semibold text-slate-900 mb-1">What Canopy asks for next</div>
-                      Significantly scale the use of Next Generation Solutions, continue proactive use of ForestMapper to prevent Ancient and Endangered Forest sourcing, and increase procurement of FSC 100% or FSC Mix certified inputs.
-                    </div>
+                    {company.notes && (
+                      <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-[12px] text-slate-700">
+                        <div className="font-semibold text-slate-900 mb-1">What Canopy asks for next</div>
+                        {company.notes}
+                      </div>
+                    )}
                   </>
                 ) : (
                   <CompanyFibreOverview company={company} />

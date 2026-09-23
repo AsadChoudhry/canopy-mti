@@ -1,6 +1,6 @@
 import type { Store, Source, Quantity, Company, Product, Facility, Origin, Relationship, Solution, Scenario } from './model'
 import { METSA_COMPANY, METSA_FACILITIES, METSA_ORIGINS, METSA_PRODUCTS, METSA_QUANTITIES, METSA_RELATIONSHIPS, METSA_SOURCES } from './metsa'
-import { FASHION_FACILITIES, FASHION_QUANTITIES, FASHION_RELATIONSHIPS, FASHION_SOURCES, LENZING_COMPANY } from './fashion'
+import { FASHION_FACILITIES, FASHION_QUANTITIES, FASHION_RELATIONSHIPS, FASHION_SOURCES, LENZING_COMPANY, SATERI_COMPANY, SATERI_QUANTITIES } from './fashion'
 import { FIBRE_QUANTITIES, FIBRE_SOURCES } from './fibre'
 
 const ACCESS = '2026-09-21'
@@ -332,19 +332,6 @@ export const SEED_COMPANIES: Company[] = [
     totalOutputQuantityId: 'q_sw_production_2025',
     globalComparisonQuantityId: 'q_sw_global_share',
   },
-  {
-    id: 'hm',
-    name: 'H&M Group',
-    type: 'brand',
-    stream: 'fashion',
-    sector: 'Brand · Global fashion retailer',
-    hq: 'Stockholm, Sweden',
-    logoText: 'H&M',
-    logoColour: '#e50010',
-    description: 'Brand purchasing view. Volumes are material purchases (products + packaging), not paper production, and are not added to the global producer total.',
-    sourceIds: ['src_brief'],
-    mapping: { supplierIdentified: 'unresolved', millIdentified: 'unresolved', originTraced: 'unresolved', note: 'Packaging converters, mills and origins unknown; Tier 1 factories partially disclosed.' },
-  },
 ]
 
 /* -------------------------------------------------------------------------- */
@@ -433,10 +420,10 @@ export const SEED_SCENARIOS: Scenario[] = [
 ]
 
 export const SEED_STORE: Store = {
-  version: 10,
+  version: 12,
   sources: [...SEED_SOURCES, ...METSA_SOURCES, ...FASHION_SOURCES, ...FIBRE_SOURCES],
-  quantities: [...SEED_QUANTITIES, ...METSA_QUANTITIES, ...FASHION_QUANTITIES, ...FIBRE_QUANTITIES],
-  companies: [METSA_COMPANY, LENZING_COMPANY, ...SEED_COMPANIES],
+  quantities: [...SEED_QUANTITIES, ...METSA_QUANTITIES, ...FASHION_QUANTITIES, ...SATERI_QUANTITIES, ...FIBRE_QUANTITIES],
+  companies: [METSA_COMPANY, LENZING_COMPANY, SATERI_COMPANY, ...SEED_COMPANIES],
   products: [...METSA_PRODUCTS, ...SEED_PRODUCTS],
   facilities: [...SEED_FACILITIES, ...METSA_FACILITIES, ...FASHION_FACILITIES],
   origins: [...SEED_ORIGINS, ...METSA_ORIGINS],
