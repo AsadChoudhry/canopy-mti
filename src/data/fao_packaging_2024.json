@@ -1,0 +1,291 @@
+{
+ "item": "Packaging paper and paperboard",
+ "element": "Production",
+ "year": 2024,
+ "unit": "t",
+ "worldTonnes": 277853606.0,
+ "worldFlag": "A",
+ "source": "FAOSTAT Forestry Production and Trade bulk download, accessed 2026-09-21",
+ "countries": [
+  {
+   "area": "China, mainland",
+   "m49": "156",
+   "tonnes": 86700000.0,
+   "flag": "A",
+   "flagDescription": "Official figure"
+  },
+  {
+   "area": "United States of America",
+   "m49": "840",
+   "tonnes": 47824000.0,
+   "flag": "A",
+   "flagDescription": "Official figure"
+  },
+  {
+   "area": "India",
+   "m49": "356",
+   "tonnes": 15941000.0,
+   "flag": "X",
+   "flagDescription": "Figure from external organization"
+  },
+  {
+   "area": "Germany",
+   "m49": "276",
+   "tonnes": 12140033.0,
+   "flag": "A",
+   "flagDescription": "Official figure"
+  },
+  {
+   "area": "Japan",
+   "m49": "392",
+   "tonnes": 11824295.0,
+   "flag": "A",
+   "flagDescription": "Official figure"
+  },
+  {
+   "area": "Russian Federation",
+   "m49": "643",
+   "tonnes": 7573322.0,
+   "flag": "E",
+   "flagDescription": "Estimated value"
+  },
+  {
+   "area": "Republic of Korea",
+   "m49": "410",
+   "tonnes": 7473000.0,
+   "flag": "A",
+   "flagDescription": "Official figure"
+  },
+  {
+   "area": "Brazil",
+   "m49": "076",
+   "tonnes": 7200000.0,
+   "flag": "A",
+   "flagDescription": "Official figure"
+  },
+  {
+   "area": "Sweden",
+   "m49": "752",
+   "tonnes": 5881000.0,
+   "flag": "A",
+   "flagDescription": "Official figure"
+  },
+  {
+   "area": "Indonesia",
+   "m49": "360",
+   "tonnes": 5704180.0,
+   "flag": "E",
+   "flagDescription": "Estimated value"
+  },
+  {
+   "area": "Italy",
+   "m49": "380",
+   "tonnes": 4737410.0,
+   "flag": "A",
+   "flagDescription": "Official figure"
+  },
+  {
+   "area": "France",
+   "m49": "250",
+   "tonnes": 4653780.0,
+   "flag": "E",
+   "flagDescription": "Estimated value"
+  },
+  {
+   "area": "Mexico",
+   "m49": "484",
+   "tonnes": 4612000.0,
+   "flag": "A",
+   "flagDescription": "Official figure"
+  },
+  {
+   "area": "Spain",
+   "m49": "724",
+   "tonnes": 4502200.0,
+   "flag": "A",
+   "flagDescription": "Official figure"
+  },
+  {
+   "area": "Finland",
+   "m49": "246",
+   "tonnes": 4120000.0,
+   "flag": "E",
+   "flagDescription": "Estimated value"
+  },
+  {
+   "area": "Thailand",
+   "m49": "764",
+   "tonnes": 4011440.0,
+   "flag": "A",
+   "flagDescription": "Official figure"
+  },
+  {
+   "area": "Poland",
+   "m49": "616",
+   "tonnes": 3445000.0,
+   "flag": "A",
+   "flagDescription": "Official figure"
+  },
+  {
+   "area": "Canada",
+   "m49": "124",
+   "tonnes": 3362487.0,
+   "flag": "A",
+   "flagDescription": "Official figure"
+  },
+  {
+   "area": "China, Taiwan Province of",
+   "m49": "158",
+   "tonnes": 3100000.0,
+   "flag": "E",
+   "flagDescription": "Estimated value"
+  },
+  {
+   "area": "Austria",
+   "m49": "040",
+   "tonnes": 2713000.0,
+   "flag": "E",
+   "flagDescription": "Estimated value"
+  },
+  {
+   "area": "Malaysia",
+   "m49": "458",
+   "tonnes": 2380000.0,
+   "flag": "E",
+   "flagDescription": "Estimated value"
+  },
+  {
+   "area": "Australia",
+   "m49": "036",
+   "tonnes": 2325000.0,
+   "flag": "A",
+   "flagDescription": "Official figure"
+  },
+  {
+   "area": "Viet Nam",
+   "m49": "704",
+   "tonnes": 2086100.0,
+   "flag": "E",
+   "flagDescription": "Estimated value"
+  },
+  {
+   "area": "T\u00fcrkiye",
+   "m49": "792",
+   "tonnes": 2049400.0,
+   "flag": "E",
+   "flagDescription": "Estimated value"
+  },
+  {
+   "area": "United Kingdom of Great Britain and Northern Ireland",
+   "m49": "826",
+   "tonnes": 1786000.0,
+   "flag": "E",
+   "flagDescription": "Estimated value"
+  },
+  {
+   "area": "Netherlands (Kingdom of the)",
+   "m49": "528",
+   "tonnes": 1682000.0,
+   "flag": "E",
+   "flagDescription": "Estimated value"
+  },
+  {
+   "area": "Chile",
+   "m49": "152",
+   "tonnes": 1126000.0,
+   "flag": "A",
+   "flagDescription": "Official figure"
+  },
+  {
+   "area": "South Africa",
+   "m49": "710",
+   "tonnes": 1082959.0,
+   "flag": "A",
+   "flagDescription": "Official figure"
+  },
+  {
+   "area": "Argentina",
+   "m49": "032",
+   "tonnes": 1018725.0,
+   "flag": "A",
+   "flagDescription": "Official figure"
+  },
+  {
+   "area": "Lao People's Democratic Republic",
+   "m49": "418",
+   "tonnes": 1010000.0,
+   "flag": "E",
+   "flagDescription": "Estimated value"
+  },
+  {
+   "area": "Saudi Arabia",
+   "m49": "682",
+   "tonnes": 994000.0,
+   "flag": "E",
+   "flagDescription": "Estimated value"
+  },
+  {
+   "area": "Hungary",
+   "m49": "348",
+   "tonnes": 868040.0,
+   "flag": "A",
+   "flagDescription": "Official figure"
+  },
+  {
+   "area": "Ukraine",
+   "m49": "804",
+   "tonnes": 802000.0,
+   "flag": "E",
+   "flagDescription": "Estimated value"
+  },
+  {
+   "area": "Colombia",
+   "m49": "170",
+   "tonnes": 777320.0,
+   "flag": "A",
+   "flagDescription": "Official figure"
+  },
+  {
+   "area": "Czechia",
+   "m49": "203",
+   "tonnes": 755000.0,
+   "flag": "A",
+   "flagDescription": "Official figure"
+  },
+  {
+   "area": "Philippines",
+   "m49": "608",
+   "tonnes": 674000.0,
+   "flag": "E",
+   "flagDescription": "Estimated value"
+  },
+  {
+   "area": "Pakistan",
+   "m49": "586",
+   "tonnes": 645000.0,
+   "flag": "E",
+   "flagDescription": "Estimated value"
+  },
+  {
+   "area": "Romania",
+   "m49": "642",
+   "tonnes": 519738.0,
+   "flag": "E",
+   "flagDescription": "Estimated value"
+  },
+  {
+   "area": "New Zealand",
+   "m49": "554",
+   "tonnes": 482000.0,
+   "flag": "E",
+   "flagDescription": "Estimated value"
+  },
+  {
+   "area": "Portugal",
+   "m49": "620",
+   "tonnes": 461000.0,
+   "flag": "A",
+   "flagDescription": "Official figure"
+  }
+ ]
+}
