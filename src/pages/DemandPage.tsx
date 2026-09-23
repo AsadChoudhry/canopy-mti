@@ -29,15 +29,22 @@ export function DemandPage() {
   const total = mmcf?.value ?? 8.4
   const today = recT?.value ?? 0.09
 
-  // Textile-to-textile projects outside China that are named in the mills pipeline.
-  const building = PIPELINE.filter((p) => p.path === 'textile' || (p.path === 'retrofit' && p.region !== 'china'))
+  // Textile-to-textile projects outside China named in the mills pipeline.
+  // Operating projects are already inside the 2024 output figure, so only new capacity is subtracted:
+  // committed (restarting or under construction) by default, permitted projects only if switched on.
+  const textile = PIPELINE.filter((p) => p.path === 'textile' || (p.path === 'retrofit' && p.region !== 'china'))
+  const operating = textile.filter((p) => p.stage === 'operating')
+  const committed = textile.filter((p) => p.stage === 'restarting' || p.stage === 'construction')
+  const permitted = textile.filter((p) => p.stage === 'permitted' || p.stage === 'announced')
+  const [includePermitted, setIncludePermitted] = useState(false)
+  const building = includePermitted ? [...committed, ...permitted] : committed
   const buildingMt = building.reduce((a, p) => a + p.tonnes, 0) / 1e6
 
   const [share, setShare] = useState(10)
   const [millKt, setMillKt] = useState(60)
   const wanted = (total * share) / 100
   const gap = Math.max(0, wanted - today - buildingMt)
-  const mills = Math.ceil((gap * 1000) / millKt)
+  const mills = Math.ceil((gap * 1000) / millKt - 1e-9) // guard against floating-point overshoot
   const supplied = today + buildingMt
   const coveredPct = wanted > 0 ? Math.min(100, (supplied / wanted) * 100) : 100
 
@@ -72,9 +79,25 @@ export function DemandPage() {
               <Op icon={<Minus size={16} />} />
               <Step n="2" title="Made today" value={`${fmt(today)} Mt`} sub={<span className="inline-flex items-center gap-1">MMCF from recycled material in 2024 ({recShare?.value}%) {recT && <EvidenceBadge quantity={recT} size="xs" label="" className="px-1" />}</span>} />
               <Op icon={<Minus size={16} />} />
-              <Step n="3" title="Named projects" value={`${fmt(buildingMt)} Mt`} sub={building.map((p) => `${p.operator} ${p.tonnes / 1000} kt, ${STAGE_META[p.stage].label.toLowerCase()}`).join(' · ')} />
+              <Step
+                n="3"
+                title="New capacity since 2024"
+                value={`${fmt(buildingMt)} Mt`}
+                sub={
+                  <span className="flex flex-col gap-1">
+                    <span>{building.map((p) => `${p.operator} ${p.tonnes / 1000} kt, ${STAGE_META[p.stage].label.toLowerCase()}`).join(' · ')}</span>
+                    {permitted.length > 0 && (
+                      <label className="flex items-center gap-1.5 text-slate-600 cursor-pointer">
+                        <input type="checkbox" checked={includePermitted} onChange={(e) => setIncludePermitted(e.target.checked)} className="accent-brand-500" />
+                        Include if built: {permitted.map((p) => `${p.operator} ${p.tonnes / 1000} kt`).join(', ')}
+                      </label>
+                    )}
+                    {operating.length > 0 && <span className="text-slate-400">Not counted again: {operating.map((p) => `${p.operator} ${p.tonnes / 1000} kt`).join(', ')}, already running in 2024.</span>}
+                  </span>
+                }
+              />
               <Op icon={<Equal size={16} />} />
-              <Step n="4" title="Still missing" value={`${fmt(gap)} Mt`} sub={gap > 0 ? 'Not covered by the named projects' : 'Covered by today\'s supply and the named projects'} tone={gap > 0 ? 'alert' : 'ok'} />
+              <Step n="4" title="Still missing" value={`${fmt(gap)} Mt`} sub={gap > 0 ? 'Not covered by 2024 output or new committed capacity' : 'Covered by 2024 output and new capacity'} tone={gap > 0 ? 'alert' : 'ok'} />
             </div>
 
             <div className="grid md:grid-cols-[1fr_auto] gap-4 items-center rounded-xl border border-slate-200 bg-white px-4 py-3">
@@ -93,23 +116,23 @@ export function DemandPage() {
 
             <div>
               <div className="flex justify-between text-[12px] text-slate-600">
-                <span>How much of the wanted fibre exists today or is in named projects</span>
+                <span>How much of the wanted fibre is covered by 2024 output and new capacity</span>
                 <span className="font-semibold text-slate-900 tabular-nums">{coveredPct < 1 ? coveredPct.toFixed(1) : coveredPct.toFixed(0)}%</span>
               </div>
               <div className="h-3 rounded-full bg-brand-100 overflow-hidden mt-1 flex">
                 <div className="h-full bg-brand-700" style={{ width: `${Math.min(100, (today / Math.max(wanted, 1e-9)) * 100)}%` }} title="Made today" />
-                <div className="h-full bg-brand-400" style={{ width: `${Math.max(0, coveredPct - Math.min(100, (today / Math.max(wanted, 1e-9)) * 100))}%` }} title="Named projects" />
+                <div className="h-full bg-brand-400" style={{ width: `${Math.max(0, coveredPct - Math.min(100, (today / Math.max(wanted, 1e-9)) * 100))}%` }} title="New capacity" />
               </div>
               <div className="flex gap-4 mt-1 text-[11px] text-slate-500">
                 <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-brand-700" /> Made today</span>
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-brand-400" /> Named projects</span>
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-brand-400" /> New capacity since 2024</span>
                 <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-brand-100" /> Missing</span>
               </div>
             </div>
 
             <p className="text-[11px] text-slate-400 flex gap-1.5">
               <Info size={12} className="shrink-0 mt-0.5" />
-              Rough on purpose: pulp and fibre tonnes are treated as equal, and fibre made from farm waste is not counted in "made today". The point is the size of the gap, not the exact number.
+              Rough on purpose. Projects already running in 2024 sit inside "made today", so they are not subtracted again; Circulose is counted as new because the mill stopped in 2024 and restarts in 2026. Pulp and fibre tonnes are treated as equal, and fibre from farm waste is not in "made today". The point is the size of the gap, not the exact number.
             </p>
           </div>
         </Card>
