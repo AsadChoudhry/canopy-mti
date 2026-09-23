@@ -63,13 +63,13 @@ export function Sidebar({ mobileOpen, onClose }: { mobileOpen: boolean; onClose:
         </nav>
 
         <div className="mt-auto px-5 pb-6">
-          <p className="text-[13px] font-medium leading-snug text-slate-200">
-            Forests.
-            <br />
-            Markets.
-            <br />
-            A brighter tomorrow.
-          </p>
+          <div className="flex items-center gap-2">
+            <FoxBadge size={38} />
+            <div className="leading-tight">
+              <div className="text-[12px] font-semibold text-[#f08a3a] whitespace-nowrap">Agent Curious Fox</div>
+              <div className="text-[11px] text-slate-400">Data &amp; Research</div>
+            </div>
+          </div>
           <p className="text-[10px] text-slate-400 mt-4 leading-snug">
             Concept design ·<br />
             Illustrative data where marked
@@ -77,5 +77,32 @@ export function Sidebar({ mobileOpen, onClose }: { mobileOpen: boolean; onClose:
         </div>
       </aside>
     </>
+  )
+}
+
+/** Agent Curious Fox: the Data & Research Lead's mascot. */
+function FoxBadge({ size = 44 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 120 120" width={size} height={size} aria-hidden>
+      <path d="M22 50 L30 10 L52 38 Z" fill="#e8742a" />
+      <path d="M98 50 L90 10 L68 38 Z" fill="#e8742a" />
+      <path d="M29 42 L32 20 L45 37 Z" fill="#3a2a22" />
+      <path d="M91 42 L88 20 L75 37 Z" fill="#3a2a22" />
+      <path d="M16 52 Q18 32 60 30 Q102 32 104 52 Q104 74 60 104 Q16 74 16 52 Z" fill="#f08a3a" />
+      <path d="M18 58 Q34 62 48 76 Q56 86 60 104 Q40 90 26 74 Q19 66 18 58 Z" fill="#fff7ee" />
+      <path d="M102 58 Q86 62 72 76 Q64 86 60 104 Q80 90 94 74 Q101 66 102 58 Z" fill="#fff7ee" />
+      <path d="M48 76 Q60 70 72 76 Q66 92 60 104 Q54 92 48 76 Z" fill="#fff7ee" />
+      <ellipse cx="44" cy="58" rx="4" ry="4.6" fill="#2b1d16" />
+      <ellipse cx="76" cy="58" rx="4" ry="4.6" fill="#2b1d16" />
+      <circle cx="45.4" cy="56.4" r="1.3" fill="#fff" />
+      <circle cx="77.4" cy="56.4" r="1.3" fill="#fff" />
+      <circle cx="44" cy="58" r="11" fill="rgba(255,255,255,0.18)" stroke="#1c1b1b" strokeWidth="3" />
+      <circle cx="76" cy="58" r="11" fill="rgba(255,255,255,0.18)" stroke="#1c1b1b" strokeWidth="3" />
+      <path d="M55 57 Q60 53 65 57" fill="none" stroke="#1c1b1b" strokeWidth="3" strokeLinecap="round" />
+      <path d="M33 55 L20 50" stroke="#1c1b1b" strokeWidth="3" strokeLinecap="round" />
+      <path d="M87 55 L100 50" stroke="#1c1b1b" strokeWidth="3" strokeLinecap="round" />
+      <path d="M55 92 Q60 88 65 92 Q60 98 55 92 Z" fill="#1c1b1b" />
+      <path d="M60 97 Q56 101 52 99 M60 97 Q64 101 68 99" fill="none" stroke="#1c1b1b" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
   )
 }
