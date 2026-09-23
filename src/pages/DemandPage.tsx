@@ -1,21 +1,23 @@
-import { useMemo, useState } from 'react'
-import { Handshake, Info, Users } from 'lucide-react'
+import { useState } from 'react'
+import { Equal, Handshake, Info, Minus, Users, X } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { EvidenceBadge } from '@/components/ui/EvidenceBadge'
 import { Pill } from '@/components/ui/Pill'
 import { useStore } from '@/store/StoreContext'
-import { HB_2026_HEADLINES, HOT_BUTTON_2026 } from '@/data/hotbutton'
+import { HB_2026_HEADLINES } from '@/data/hotbutton'
 import { PIPELINE } from '@/data/mills'
 import { cn } from '@/lib/cn'
 
-/** Offtake and demand signals found so far. None gives a committed tonnage. */
+/** Who has promised to buy Next Gen, and what is missing before it counts as demand. None gives tonnes. */
 const OFFTAKE = [
-  { who: 'Circulose, Sundsvall', signal: 'Volume commitments from 11 brands behind the 2026 restart.', gap: 'Brand names and tonnes not published.', sourceId: 'src_circulose_ortviken' },
-  { who: 'Aditya Birla (Birla Cellulose)', signal: 'Cooperation agreement with Circulose announced December 2025; LIVA Reviva already uses Circulose pulp.', gap: 'No tonnage.', sourceId: 'src_hotbutton_2026' },
-  { who: 'Red Leaf Pulp, Regina', signal: 'Packaging maker Dart provided most of Red Leaf\'s funding.', gap: 'Offtake share not confirmed in the text read.', sourceId: 'src_redleaf_ck' },
-  { who: 'Canopy brand partners', signal: '950+ brands with forest policies; 2.4 trillion USD combined revenue.', gap: 'Policies commit to Next Gen in principle, not to tonnes.', sourceId: 'src_canopy_ar_2425' },
+  { who: 'Circulose, Sundsvall', signal: '11 brands have committed to buy from the 2026 restart.', gap: 'Brand names and tonnes not published.', sourceId: 'src_circulose_ortviken' },
+  { who: 'Aditya Birla (Birla Cellulose)', signal: 'Agreement with Circulose (December 2025); its LIVA Reviva line already uses Circulose pulp.', gap: 'No tonnage.', sourceId: 'src_hotbutton_2026' },
+  { who: 'Red Leaf Pulp, Regina', signal: 'Packaging maker Dart provided most of Red Leaf\'s funding.', gap: 'How much pulp Dart will buy is not stated.', sourceId: 'src_redleaf_ck' },
+  { who: 'Canopy brand partners', signal: '950+ brands have forest policies that favour Next Gen.', gap: 'Policies are commitments in principle, not tonnes.', sourceId: 'src_canopy_ar_2425' },
 ]
+
+const fmt = (v: number) => (v < 1 ? v.toFixed(2) : v.toFixed(1))
 
 export function DemandPage() {
   const { data } = useStore()
@@ -25,100 +27,114 @@ export function DemandPage() {
   const recShare = Q('q_mmcf_recycled_share_2024')
   const recT = Q('q_mmcf_recycled_t_2024')
   const total = mmcf?.value ?? 8.4
+  const today = recT?.value ?? 0.09
 
-  const ngProducers = HOT_BUTTON_2026.filter((r) => r.nextGen)
-  const ngCapPct = ngProducers.reduce((a, r) => a + r.capacityPct, 0)
-  const textilePipeline = PIPELINE.filter((p) => p.path === 'textile' || (p.path === 'retrofit' && p.region !== 'china')).reduce((a, p) => a + p.tonnes, 0) / 1e6
+  // Textile-to-textile projects outside China that are named in the mills pipeline.
+  const building = PIPELINE.filter((p) => p.path === 'textile' || (p.path === 'retrofit' && p.region !== 'china'))
+  const buildingMt = building.reduce((a, p) => a + p.tonnes, 0) / 1e6
 
   const [share, setShare] = useState(10)
   const [millKt, setMillKt] = useState(60)
-  const need = (total * share) / 100
-  const current = recT?.value ?? 0.09
-  const gap = Math.max(0, need - current - textilePipeline)
+  const wanted = (total * share) / 100
+  const gap = Math.max(0, wanted - today - buildingMt)
   const mills = Math.ceil((gap * 1000) / millKt)
-
-  const ladder = useMemo(
-    () => [
-      { label: 'All MMCF produced, 2024', v: total, colour: '#282727', q: mmcf },
-      { label: 'Capacity share of producers selling a Next Gen line', v: (total * ngCapPct) / 100, colour: '#009a7e', note: `${ngCapPct.toFixed(1)}% of capacity × 8.4 Mt; an approximation that mixes capacity share with output` },
-      { label: `Your demand scenario: ${share}% Next Gen`, v: need, colour: '#8b70ee' },
-      { label: 'Named European textile-to-textile pipeline', v: textilePipeline, colour: '#6a47ea' },
-      { label: 'MMCF from recycled feedstock, 2024', v: current, colour: '#35207c', q: recT },
-    ],
-    [total, ngCapPct, share, need, textilePipeline, current, mmcf, recT],
-  )
-  const max = Math.max(...ladder.map((l) => l.v))
+  const supplied = today + buildingMt
+  const coveredPct = wanted > 0 ? Math.min(100, (supplied / wanted) * 100) : 100
 
   return (
     <AppShell crumbs={[{ label: 'Demand and supply' }]}>
       <div className="flex flex-col gap-5">
         <div>
-          <h1 className="text-[32px] font-bold text-slate-900 tracking-tight leading-tight">Next Gen demand and supply, fashion</h1>
-          <p className="text-[15px] text-slate-500 mt-1">How much Next Gen MMCF brands would need, against what exists and what is being built.</p>
-        </div>
-
-        <div className="rounded-2xl border border-brand-100 bg-brand-50 px-5 py-4 grid md:grid-cols-[1fr_auto] gap-4 items-center">
-          <div>
-            <div className="text-[11px] uppercase tracking-wide font-semibold text-brand-700">Decision this supports</div>
-            <p className="text-[15px] font-semibold text-slate-900 mt-0.5">How big is the gap between brand ambition and Next Gen supply, and how many mills does it justify?</p>
-            <p className="text-[12px] text-slate-600 mt-1">Investors need offtake to fund a mill. This view shows the supply side from sources and treats demand as a scenario until brand tonnes are collected.</p>
-          </div>
-          <div className="flex flex-wrap gap-1.5 md:justify-end">
-            {['CanopyStyle', 'Next Gen Solutions', 'Investors'].map((u) => <Pill key={u} tone="forest"><Users size={11} /> {u}</Pill>)}
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-4 gap-4">
-          <Stat value={`${total} Mt`} label="MMCF produced, 2024" badge={mmcf && <EvidenceBadge quantity={mmcf} size="xs" />} />
-          <Stat value={`${recShare?.value ?? '?'}%`} label="Made from recycled feedstock" badge={recShare && <EvidenceBadge quantity={recShare} size="xs" />} sub="0.7% in 2023" />
-          <Stat value={String(HB_2026_HEADLINES.nextGenLines)} label="Next Gen lines on the market" badge={S('src_hotbutton_2026') && <EvidenceBadge source={S('src_hotbutton_2026')} label="HB 2026" size="xs" />} sub={`${HB_2026_HEADLINES.nextGenLinesChina} from Chinese producers; ${HB_2026_HEADLINES.nextGenLines2025} in 2025`} />
-          <Stat value={`${ngProducers.length} of ${HOT_BUTTON_2026.length}`} label="Producers offering a Next Gen line" sub={`${ngCapPct.toFixed(0)}% of global capacity`} />
+          <h1 className="text-[32px] font-bold text-slate-900 tracking-tight leading-tight">How many Next Gen fibre mills does fashion need?</h1>
+          <p className="text-[15px] text-slate-500 mt-1 max-w-3xl">
+            Viscose, lyocell and other fabrics made from wood pulp are called MMCF. Next Gen versions are made from old clothes instead of trees. This page asks: if brands wanted a share of their MMCF to be Next Gen, how much is missing, and how many mills would fill the gap?
+          </p>
         </div>
 
         <Card>
-          <CardHeader title="Supply ladder" subtitle="Million tonnes a year. Set a demand scenario to see the gap." />
-          <div className="px-5 pb-5 grid lg:grid-cols-[1.5fr_1fr] gap-5">
-            <div className="flex flex-col gap-2.5">
-              {ladder.map((l) => (
-                <div key={l.label}>
-                  <div className="flex justify-between gap-2 text-[12px]">
-                    <span className="text-slate-700 flex items-center gap-1.5">{l.label} {l.q && <EvidenceBadge quantity={l.q} size="xs" label="" className="px-1" />}</span>
-                    <span className="tabular-nums font-semibold text-slate-900">{l.v < 1 ? l.v.toFixed(2) : l.v.toFixed(1)} Mt</span>
-                  </div>
-                  <div className="h-3 rounded-full bg-slate-100 overflow-hidden mt-1">
-                    <div className="h-full rounded-full" style={{ width: `${Math.max(0.6, (l.v / max) * 100)}%`, background: l.colour }} />
-                  </div>
-                  {l.note && <div className="text-[10px] text-slate-400 mt-0.5">{l.note}</div>}
-                </div>
-              ))}
+          <CardHeader title="The calculation" subtitle="Move the slider. Everything else comes from sources." />
+          <div className="px-5 pb-5 flex flex-col gap-4">
+            <div className="rounded-xl border border-brand-200 bg-brand-50 px-4 py-3">
+              <div className="flex items-center justify-between gap-3 text-[14px] font-semibold text-slate-900">
+                <span>What share of MMCF should be Next Gen?</span>
+                <span className="text-[22px] tabular-nums text-brand-700">{share}%</span>
+              </div>
+              <input type="range" min={1} max={50} value={share} onChange={(e) => setShare(Number(e.target.value))} className="w-full accent-brand-500 mt-1" aria-label="Next Gen share of MMCF" />
+              <div className="flex justify-between text-[11px] text-slate-500">
+                <span>1%</span>
+                <span>This is a scenario, not a measured brand commitment</span>
+                <span>50%</span>
+              </div>
             </div>
-            <div className="flex flex-col gap-3">
-              <div className="rounded-xl border border-slate-200 bg-white px-3 py-2.5">
-                <div className="flex justify-between items-center text-[12px] font-semibold text-slate-800">Next Gen share of MMCF brands ask for <Pill tone="grey">Scenario</Pill></div>
-                <div className="flex items-center gap-3 mt-1.5">
-                  <input type="range" min={1} max={50} value={share} onChange={(e) => setShare(Number(e.target.value))} className="flex-1 accent-brand-500" aria-label="Next Gen share of MMCF" />
-                  <span className="w-[40px] text-right font-bold tabular-nums">{share}%</span>
-                </div>
-                <div className="flex items-center gap-2 mt-2 text-[12px] text-slate-600">
-                  Mill size
+
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr] items-stretch gap-2">
+              <Step n="1" title="Fibre wanted" value={`${fmt(wanted)} Mt`} sub={<span className="inline-flex items-center gap-1">{share}% of the {total} Mt MMCF made in 2024 {mmcf && <EvidenceBadge quantity={mmcf} size="xs" label="" className="px-1" />}</span>} tone="brand" />
+              <Op icon={<Minus size={16} />} />
+              <Step n="2" title="Made today" value={`${fmt(today)} Mt`} sub={<span className="inline-flex items-center gap-1">MMCF from recycled material in 2024 ({recShare?.value}%) {recT && <EvidenceBadge quantity={recT} size="xs" label="" className="px-1" />}</span>} />
+              <Op icon={<Minus size={16} />} />
+              <Step n="3" title="Being built" value={`${fmt(buildingMt)} Mt`} sub={`${building.map((p) => p.operator).join(', ')}. See Next Gen mills.`} />
+              <Op icon={<Equal size={16} />} />
+              <Step n="4" title="Still missing" value={`${fmt(gap)} Mt`} sub={gap > 0 ? 'No mill is planned for this yet' : 'Covered by today\'s supply and the pipeline'} tone={gap > 0 ? 'alert' : 'ok'} />
+            </div>
+
+            <div className="grid md:grid-cols-[1fr_auto] gap-4 items-center rounded-xl border border-slate-200 bg-white px-4 py-3">
+              <div>
+                <div className="flex items-center gap-2 text-[13px] text-slate-600 flex-wrap">
+                  <X size={14} className="text-slate-400" /> Divide the missing amount by the size of one mill:
                   {[30, 60, 120].map((k) => <Pill key={k} active={millKt === k} onClick={() => setMillKt(k)}>{k} kt</Pill>)}
                 </div>
+                <p className="text-[11px] text-slate-400 mt-1">60 kt is Circulose's restarted mill in Sweden; 30 kt is Infinited Fiber's planned mill in Finland.</p>
               </div>
-              <div className={cn('rounded-xl px-3 py-3 border', gap > 0 ? 'bg-brand-50 border-brand-200' : 'bg-green-50 border-green-200')}>
-                <div className="text-[11px] text-slate-500">Gap after today's supply and the named pipeline</div>
-                <div className="text-[28px] font-bold text-slate-900 tabular-nums leading-tight">{gap.toFixed(2)} Mt</div>
-                <div className="text-[13px] text-slate-700">≈ <b>{mills}</b> textile-to-textile mills of {millKt} kt</div>
+              <div className="text-right">
+                <div className="text-[36px] font-bold text-slate-900 tabular-nums leading-none">{mills}</div>
+                <div className="text-[12px] text-slate-500">new mills needed</div>
               </div>
-              <p className="text-[11px] text-slate-400 flex gap-1.5"><Info size={12} className="shrink-0 mt-0.5" /> Fibre and pulp tonnes are treated as equal, which overstates supply slightly. Agricultural residue MMCF is not in the recycled figure.</p>
             </div>
+
+            <div>
+              <div className="flex justify-between text-[12px] text-slate-600">
+                <span>How much of the wanted fibre exists or is being built</span>
+                <span className="font-semibold text-slate-900 tabular-nums">{coveredPct < 1 ? coveredPct.toFixed(1) : coveredPct.toFixed(0)}%</span>
+              </div>
+              <div className="h-3 rounded-full bg-brand-100 overflow-hidden mt-1 flex">
+                <div className="h-full bg-brand-700" style={{ width: `${Math.min(100, (today / Math.max(wanted, 1e-9)) * 100)}%` }} title="Made today" />
+                <div className="h-full bg-brand-400" style={{ width: `${Math.max(0, coveredPct - Math.min(100, (today / Math.max(wanted, 1e-9)) * 100))}%` }} title="Being built" />
+              </div>
+              <div className="flex gap-4 mt-1 text-[11px] text-slate-500">
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-brand-700" /> Made today</span>
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-brand-400" /> Being built</span>
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-brand-100" /> Missing</span>
+              </div>
+            </div>
+
+            <p className="text-[11px] text-slate-400 flex gap-1.5">
+              <Info size={12} className="shrink-0 mt-0.5" />
+              Rough on purpose: pulp and fibre tonnes are treated as equal, and fibre made from farm waste is not counted in "made today". The point is the size of the gap, not the exact number.
+            </p>
           </div>
         </Card>
 
+        <div className="grid md:grid-cols-2 gap-4">
+          <Card className="px-5 py-4">
+            <div className="text-[13px] text-slate-500">Who uses this</div>
+            <div className="flex flex-wrap gap-1.5 mt-1.5">{['CanopyStyle', 'Next Gen Solutions', 'Investors'].map((u) => <Pill key={u} tone="forest"><Users size={11} /> {u}</Pill>)}</div>
+            <p className="text-[13px] text-slate-700 mt-2">Investors will only fund a mill if someone promises to buy its fibre. This page sizes the opportunity; the table below shows how little of that demand is written down yet.</p>
+          </Card>
+          <Card className="px-5 py-4">
+            <div className="flex items-center justify-between gap-2">
+              <div className="text-[13px] text-slate-500">Next Gen fabrics on sale today</div>
+              {S('src_hotbutton_2026') && <EvidenceBadge source={S('src_hotbutton_2026')} label="Hot Button 2026" size="xs" />}
+            </div>
+            <div className="text-[28px] font-bold text-slate-900 tabular-nums leading-tight">{HB_2026_HEADLINES.nextGenLines} product lines</div>
+            <p className="text-[13px] text-slate-700">Up from {HB_2026_HEADLINES.nextGenLines2025} in 2025; {HB_2026_HEADLINES.nextGenLinesChina} are from Chinese producers. Products exist, but in small volumes.</p>
+          </Card>
+        </div>
+
         <Card>
-          <CardHeader title={<span className="flex items-center gap-2"><Handshake size={16} className="text-brand-600" /> Offtake signals</span>} subtitle="What demand evidence exists, and what is missing before it can go in an investment case" />
+          <CardHeader title={<span className="flex items-center gap-2"><Handshake size={16} className="text-brand-600" /> Who has promised to buy?</span>} subtitle="Signs of demand found so far, and what is missing before they count in an investment case" />
           <div className="px-5 pb-5 overflow-x-auto">
             <table className="w-full text-[12px] min-w-[620px]">
-              <thead className="text-[10px] uppercase tracking-wide text-slate-400"><tr><th className="text-left py-2 pr-3 font-semibold">Where</th><th className="text-left py-2 pr-3 font-semibold">Signal</th><th className="text-left py-2 pr-3 font-semibold">Missing</th><th className="py-2" /></tr></thead>
+              <thead className="text-[10px] uppercase tracking-wide text-slate-400"><tr><th className="text-left py-2 pr-3 font-semibold">Where</th><th className="text-left py-2 pr-3 font-semibold">What we know</th><th className="text-left py-2 pr-3 font-semibold">What is missing</th><th className="py-2" /></tr></thead>
               <tbody>
                 {OFFTAKE.map((o) => {
                   const src = S(o.sourceId)
@@ -133,7 +149,7 @@ export function DemandPage() {
                 })}
               </tbody>
             </table>
-            <p className="text-[11px] text-slate-500 mt-3"><b className="text-slate-700">To collect next:</b> brand MMCF volumes and Next Gen targets from the Textile Exchange Materials Benchmark and CDP Forests, and signed offtake tonnes from Fiber Club members. That turns the scenario slider into a measured number.</p>
+            <p className="text-[12px] text-slate-600 mt-3"><b className="text-slate-800">Next step:</b> collect how much MMCF each brand buys and what share they want as Next Gen (Textile Exchange Materials Benchmark, CDP Forests, Fiber Club offtake agreements). Then the slider becomes a measured number.</p>
           </div>
         </Card>
       </div>
@@ -141,15 +157,16 @@ export function DemandPage() {
   )
 }
 
-function Stat({ value, label, sub, badge }: { value: string; label: string; sub?: string; badge?: React.ReactNode }) {
+function Step({ n, title, value, sub, tone }: { n: string; title: string; value: string; sub: React.ReactNode; tone?: 'brand' | 'alert' | 'ok' }) {
   return (
-    <Card className="px-5 py-4">
-      <div className="flex items-start justify-between gap-2">
-        <div className="text-[26px] font-bold text-slate-900 tabular-nums leading-none">{value}</div>
-        {badge}
-      </div>
-      <div className="text-[13px] text-slate-600 mt-1.5">{label}</div>
-      {sub && <div className="text-[11px] text-slate-400 mt-0.5">{sub}</div>}
-    </Card>
+    <div className={cn('rounded-xl border px-3 py-3', tone === 'brand' ? 'border-brand-200 bg-brand-50' : tone === 'alert' ? 'border-amber-200 bg-amber-50' : tone === 'ok' ? 'border-green-200 bg-green-50' : 'border-slate-200 bg-white')}>
+      <div className="text-[11px] font-semibold text-slate-500 flex items-center gap-1.5"><span className="w-4 h-4 rounded-full bg-slate-900 text-white text-[10px] grid place-items-center">{n}</span>{title}</div>
+      <div className="text-[26px] font-bold text-slate-900 tabular-nums leading-tight mt-1">{value}</div>
+      <div className="text-[11px] text-slate-500 mt-0.5">{sub}</div>
+    </div>
   )
+}
+
+function Op({ icon }: { icon: React.ReactNode }) {
+  return <div className="hidden md:grid place-items-center text-slate-400">{icon}</div>
 }
