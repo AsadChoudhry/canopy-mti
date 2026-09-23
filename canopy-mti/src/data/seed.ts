@@ -1,7 +1,6 @@
 import type { Store, Source, Quantity, Company, Product, Facility, Origin, Relationship, Solution, Scenario } from './model'
 import { METSA_COMPANY, METSA_FACILITIES, METSA_ORIGINS, METSA_PRODUCTS, METSA_QUANTITIES, METSA_RELATIONSHIPS, METSA_SOURCES } from './metsa'
 import { FASHION_FACILITIES, FASHION_QUANTITIES, FASHION_RELATIONSHIPS, FASHION_SOURCES, LENZING_COMPANY } from './fashion'
-import { FIBRE_QUANTITIES, FIBRE_SOURCES } from './fibre'
 
 const ACCESS = '2026-09-21'
 
@@ -296,7 +295,6 @@ export const SEED_COMPANIES: Company[] = [
     id: 'mondi',
     name: 'Mondi',
     type: 'producer',
-    stream: 'packaging',
     sector: 'Producer · Paper & packaging',
     hq: 'Weybridge, UK / Vienna, Austria',
     logoText: 'mondi',
@@ -322,7 +320,6 @@ export const SEED_COMPANIES: Company[] = [
     id: 'smurfit_westrock',
     name: 'Smurfit Westrock',
     type: 'producer',
-    stream: 'packaging',
     sector: 'Producer · Paper-based packaging',
     hq: 'Dublin, Ireland',
     logoText: 'SW',
@@ -336,7 +333,6 @@ export const SEED_COMPANIES: Company[] = [
     id: 'hm',
     name: 'H&M Group',
     type: 'brand',
-    stream: 'fashion',
     sector: 'Brand · Global fashion retailer',
     hq: 'Stockholm, Sweden',
     logoText: 'H&M',
@@ -433,9 +429,9 @@ export const SEED_SCENARIOS: Scenario[] = [
 ]
 
 export const SEED_STORE: Store = {
-  version: 9,
-  sources: [...SEED_SOURCES, ...METSA_SOURCES, ...FASHION_SOURCES, ...FIBRE_SOURCES],
-  quantities: [...SEED_QUANTITIES, ...METSA_QUANTITIES, ...FASHION_QUANTITIES, ...FIBRE_QUANTITIES],
+  version: 8,
+  sources: [...SEED_SOURCES, ...METSA_SOURCES, ...FASHION_SOURCES],
+  quantities: [...SEED_QUANTITIES, ...METSA_QUANTITIES, ...FASHION_QUANTITIES],
   companies: [METSA_COMPANY, LENZING_COMPANY, ...SEED_COMPANIES],
   products: [...METSA_PRODUCTS, ...SEED_PRODUCTS],
   facilities: [...SEED_FACILITIES, ...METSA_FACILITIES, ...FASHION_FACILITIES],

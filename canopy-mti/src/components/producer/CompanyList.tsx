@@ -49,36 +49,27 @@ export function CompanyList({ activeId }: { activeId?: string }) {
           </button>
         ))}
       </div>
-      {(['packaging', 'fashion'] as const).map((stream) => {
-        const group = rows.filter(({ c }) => (c.stream ?? 'packaging') === stream)
-        if (!group.length) return null
-        return (
-          <div key={stream}>
-            <div className="text-[10px] uppercase tracking-wide font-semibold text-slate-400 border-t border-slate-200 pt-2 pb-1">{stream}</div>
-            <ul className="flex flex-col gap-1">
-              {group.map(({ c, out, coverage, mapped }) => (
-                <li key={c.id}>
-                  <Link
-                    to={`/companies/${c.id}`}
-                    className={cn('flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-[13px] transition-colors border-l-2', activeId === c.id ? 'bg-brand-50 border-brand-500 text-brand-800' : 'border-transparent hover:bg-cream-100 text-slate-800')}
-                  >
-                    <div className="min-w-0">
-                      <div className="font-medium truncate">{c.name}</div>
-                      <div className="text-[10px] text-slate-400">
-                        {c.type === 'brand' ? 'Brand · purchases' : 'Producer'} · mapping {coverage}/3
-                        {mapped > 0 && ` · ${mapped.toFixed(1)}% mapped`}
-                      </div>
-                    </div>
-                    <span className={cn('text-[12px] font-semibold tabular-nums shrink-0', activeId === c.id ? 'text-brand-700' : 'text-slate-500')}>
-                      {c.type === 'brand' ? 'n/a' : out && out.value !== null ? `${out.value} ${out.unit}` : 'Unknown'}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )
-      })}
+      <ul className="flex flex-col gap-1 border-t border-slate-200 pt-2">
+        {rows.map(({ c, out, coverage, mapped }) => (
+          <li key={c.id}>
+            <Link
+              to={`/companies/${c.id}`}
+              className={cn('flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-[13px] transition-colors border-l-2', activeId === c.id ? 'bg-brand-50 border-brand-500 text-brand-800' : 'border-transparent hover:bg-cream-100 text-slate-800')}
+            >
+              <div className="min-w-0">
+                <div className="font-medium truncate">{c.name}</div>
+                <div className="text-[10px] text-slate-400">
+                  {c.type === 'brand' ? 'Brand · purchases' : 'Producer'} · mapping {coverage}/3
+                  {mapped > 0 && ` · ${mapped.toFixed(1)}% mapped`}
+                </div>
+              </div>
+              <span className={cn('text-[12px] font-semibold tabular-nums shrink-0', activeId === c.id ? 'text-brand-700' : 'text-slate-500')}>
+                {c.type === 'brand' ? '—' : out && out.value !== null ? `${out.value} ${out.unit}` : 'Unknown'}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }

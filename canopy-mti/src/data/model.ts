@@ -59,8 +59,6 @@ export interface Company {
   id: string
   name: string
   type: CompanyType
-  /** Which Canopy programme area the company sits in. */
-  stream?: 'packaging' | 'fashion'
   sector: string
   hq: string
   logoText: string

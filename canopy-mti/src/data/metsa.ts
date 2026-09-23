@@ -264,7 +264,6 @@ export const METSA_COMPANY: Company = {
   id: 'metsa_board',
   name: 'Metsä Board',
   type: 'producer',
-  stream: 'packaging',
   sector: 'Producer · Fresh-fibre paperboard',
   hq: 'Espoo, Finland',
   logoText: 'Metsä',

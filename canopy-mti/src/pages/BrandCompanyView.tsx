@@ -9,7 +9,6 @@ import { OpportunitiesTab } from './company/OpportunitiesTab'
 import { CommitmentsTab } from './company/CommitmentsTab'
 import { NotesTab } from './company/NotesTab'
 import { MaterialExplorer } from '@/components/company/MaterialExplorer'
-import { BrandFashionScope } from '@/components/company/BrandFashionScope'
 
 /**
  * Brand purchasing view (H&M). Volumes here are material purchases — products and packaging —
@@ -27,7 +26,6 @@ export function BrandCompanyView({ companyId, tab }: { companyId: string; tab: s
         </span>
       </div>
       <CompanyHeader company={company} />
-      <BrandFashionScope companyId={companyId} />
       <CompanyTabs companyId={companyId} />
       {tab === 'overview' && <OverviewTab companyId={companyId} />}
       {tab === 'materials' && <MaterialExplorer companyId={companyId} />}

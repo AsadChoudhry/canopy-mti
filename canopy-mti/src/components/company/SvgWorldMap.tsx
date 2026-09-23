@@ -170,9 +170,8 @@ export function SvgWorldMap({
       >
         <rect width={W} height={H} fill="#ffffff" />
         <g transform={`translate(${view.x},${view.y}) scale(${k})`}>
-          {COUNTRIES.features.map((f, i) => {
-            // A few features (N. Cyprus, Somaliland, Kosovo) carry no numeric id in world-atlas.
-            const id = f.id === undefined || f.id === null ? `noid-${i}` : String(f.id)
+          {COUNTRIES.features.map((f) => {
+            const id = String(f.id)
             const fill = hl[id] ?? landColour
             const isSel = selectedId && id === selectedId.padStart(3, '0')
             return (

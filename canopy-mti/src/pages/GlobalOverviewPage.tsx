@@ -9,7 +9,6 @@ import { EvidenceBadge } from '@/components/ui/EvidenceBadge'
 import { SvgWorldMap, type MapBubble } from '@/components/company/SvgWorldMap'
 import { PackagingComposition } from '@/components/global/PackagingComposition'
 import { HotButtonTable, RiskPill } from '@/components/global/HotButton'
-import { FibreScope } from '@/components/global/FibreScope'
 import { HOT_BUTTON_2025, HB_CRITERIA, RISK_META, capacityByRisk, type RiskStatus } from '@/data/hotbutton'
 import { useStore } from '@/store/StoreContext'
 import { FIBRE_META, type Quantity } from '@/data/model'
@@ -312,17 +311,10 @@ function FashionOverview() {
   return (
     <div className="flex flex-col gap-4">
       <div className="grid md:grid-cols-3 gap-4">
-        <KpiCard icon={<Shirt size={24} />} iconBg="bg-brand-100 text-brand-600" value="8.4 Mt" label="Man-made cellulosic fibre, 2024" sub="6% of the 132 Mt global fibre market, and the only forest-derived category" quantity={Q('q_fibre_mmcf_2024')} />
-        <KpiCard icon={<Leaf size={24} />} iconBg="bg-green-100 text-green-600" value={`${Q('q_mmcf_green')?.value}%`} label="MMCF capacity in green shirt producers" sub="22 of the 28 scored producers in the Hot Button matrix" quantity={Q('q_mmcf_green')} />
+        <KpiCard icon={<Shirt size={24} />} iconBg="bg-brand-100 text-brand-600" value="36 producers" label="In the Hot Button matrix, 2025" sub="Covering essentially all global MMCF capacity" quantity={Q('q_mmcf_producers')} />
+        <KpiCard icon={<Leaf size={24} />} iconBg="bg-green-100 text-green-600" value={`${Q('q_mmcf_green')?.value}%`} label="Capacity in green shirt producers" sub="22 of the 28 scored producers" quantity={Q('q_mmcf_green')} />
         <KpiCard icon={<TreePine size={24} />} iconBg="bg-red-50 text-red-700" value={`${Q('q_mmcf_known_risk')?.value}%`} label="Capacity at known risk" sub={`Plus ${Q('q_mmcf_audit_required')?.value}% requiring an audit`} quantity={Q('q_mmcf_known_risk')} />
       </div>
-
-      <Card>
-        <CardHeader title="Where MMCF sits in global fibre" subtitle="Textile Exchange, 2024" />
-        <div className="px-5 pb-5">
-          <FibreScope total={Q('q_fibre_total_2024')!} mmcf={Q('q_fibre_mmcf_2024')!} certified={Q('q_fibre_mmcf_certified')!} recycled={Q('q_fibre_mmcf_recycled')!} recycledTextiles={Q('q_fibre_recycled_textiles')!} />
-        </div>
-      </Card>
 
       <div className="grid xl:grid-cols-[1fr_1.35fr] gap-4 items-start">
         <Card>

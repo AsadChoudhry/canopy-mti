@@ -77,7 +77,6 @@ export const LENZING_COMPANY: Company = {
   id: 'lenzing',
   name: 'Lenzing',
   type: 'producer',
-  stream: 'fashion',
   sector: 'Producer · Man-made cellulosic fibre',
   hq: 'Lenzing, Austria',
   logoText: 'Lenzing',
