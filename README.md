@@ -18,9 +18,13 @@ Stack: React 19 · TypeScript · Tailwind v4 · React Router · Recharts · Luci
 |---|---|
 | `/` | Global overview — FAO 2024 baseline, evidence-state fibre composition (with explicit demo mode), production / fibre-origin map, researched-producer table. Fashion tab: "Data not yet populated". |
 | `/companies/:id?product=…&panel=transition&tab=…` | Company workspace. Producer view (Mondi, Smurfit Westrock) with selected product, supply-chain context and the **Transition options** panel (Alternatives / Scenario / Evidence) that never leaves the company context. Brand view (H&M) is a separate purchasing accounting view. |
-| `/solutions` | Canopy solutions catalogue — EcoPaper / Next Gen providers / ForestMapper, search + filters, shortlist. No calculator here by design. |
-| `/mills` | Next Gen mill siting, India first. Candidate regions scored on verified feedstock (PIB paddy straw, Fashion for Good textile waste) and existing MMCF demand (Hot Button 2026), with adjustable weights and a list of the data layers to add next. |
-| `/roadmap` | Year-one roadmap: what is built, what is proposed, who owns each piece and the decision it changes. |
+| `/transparency` | Pack4Good producer transparency score: a Hot Button-style 30-point disclosure score for packaging producers, computed live from the evidence store, with the engagement ask per producer. |
+| `/risk` | Supply risk overlay: origin and mill countries by EUDR country tier, Hot Button risk status and certified share, with an exposure rating per producer and the forest-level layers still to load. |
+| `/solutions` | Canopy solutions catalogue — EcoPaper / Next Gen providers / ForestMapper, search + filters, shortlist. The EcoPaper tab ranks listings against a traced product (grade, geography, evidence) and shows field coverage. |
+| `/mills?region=india\|north_america\|europe` | Next Gen mill siting in Canopy's first three regions. Candidate regions scored on verified feedstock and demand; **mill build planner** (feedstock × collectable share × yield → mills, pulp, investment, GHG, share of the 1.5 Mt India blueprint and of the gap to 60 Mt, copyable investor summary); named Next Gen project pipeline by stage. |
+| `/demand` | Next Gen MMCF demand and supply: Textile Exchange 2024 production and recycled share, Hot Button Next Gen lines, a demand scenario against the named pipeline, and the offtake evidence still missing. |
+| `/policy` | Policy tracker: PPWR, EUDR (as amended) and EU textile EPR on one timeline, with countdowns and each tracked producer tagged by rule. |
+| `/roadmap` | Year-one roadmap: every item has a working view; each card says which data is still to load. |
 | `/workspace?tab=…` | Data workspace — forms for companies, products, facilities, origins, sourcing links, quantities, sources, solutions, scenarios; validation; local persistence; JSON import/export. |
 
 ## Implementation note
@@ -40,7 +44,20 @@ Stack: React 19 · TypeScript · Tailwind v4 · React Router · Recharts · Luci
 - **PIB, 8 Oct 2021** — paddy straw generated: Punjab 18.74 Mt, Haryana 6.8 Mt, eight NCR districts of UP 0.67 Mt (2021 projections).
 - **Fashion for Good, Wealth in Waste** — India textile waste up to 7.8 Mt a year (summary article only; full report not opened).
 
+- **Canopy India investment blueprint** (21 January 2026) — $2 bn initial programme enabling the first 1.5 Mt of Next Gen capacity in India; $13 to 15 bn over the next decade.
+- **Circulose** — Ortviken, Sundsvall restarting in 2026 at 60,000 t a year of textile-to-textile pulp; commitments from 11 brands.
+- **Red Leaf Pulp** (Corporate Knights, January 2026) — Regina mill, 400,000 t straw to 200,000 t pulp a year, operating 2028.
+- **Infinited Fiber** — environmental permit for Kemi (March 2026), no investment decision. Capacity 30,000 t from 2022 announcements, not re-verified.
+- **Textile Exchange Materials Market Report 2025** — MMCF 8.4 Mt in 2024 (7.9 Mt in 2023); recycled-feedstock share 1.1% (0.7% in 2023).
+- **CAQM via Lok Sabha answer** (Down To Earth, 8 December 2025) — 5,114 paddy residue burning events in Punjab, 15 September to 30 November 2025.
+- **EUDR country benchmark** (Preferred by Nature summary of Implementing Regulation 2025/1093) — EU, China low risk; Brazil, Indonesia standard; four high-risk countries.
+- Seen in search results only and marked *needs review*: EUDR amended dates (30 Dec 2026 / 30 Jun 2027), PPWR application 12 Aug 2026, revised Waste Framework Directive (in force 16 Oct 2025, EPR within 30 months), EEA EU textile waste 6.94 Mt (2022), Södra OnceMore 6,000 t.
+
 ### Calculated values
+- India first phase ≈ $1,333 per tonne of capacity = $2 bn / 1.5 Mt (a programme total, not a mill capital cost).
+- Straw to pulp yield 50% = 200,000 / 400,000 t (Red Leaf design figures); the planner's default for straw. Textile yield and collectable share are user assumptions, labelled as such.
+- Recycled-feedstock MMCF ≈ 0.09 Mt = 8.4 Mt × 1.1%.
+- Pack4Good transparency score: output 4, mills 4, origin 4, certified share 4, best product's evidence checks 6, product origin 4, fibre split 4 (max 30). Leading ≥ 22, Partial 12–21, Opaque < 12.
 - Road to 60 Mt: 24.5% a year = (60 / 8.35)^(1/9) − 1; ~$1,510 per tonne of new annual output = $78B / (60 − 8.35) Mt.
 - Scenario GHG estimate = Next Gen fibre tonnes introduced × 4 t CO2e (Canopy's pulp average applied to fibre tonnes; recycled fibre not credited).
 - Mondi paper & board 4.8 Mt = 2.6 + 1.3 + 0.9 (market pulp excluded).

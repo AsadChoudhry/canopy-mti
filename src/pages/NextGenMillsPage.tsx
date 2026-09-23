@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Factory, Info, Layers, Wheat, Shirt, Users } from 'lucide-react'
 import { AppShell } from '@/components/layout/AppShell'
 import { Card, CardHeader } from '@/components/ui/Card'
@@ -7,7 +8,9 @@ import { Pill } from '@/components/ui/Pill'
 import { SvgWorldMap } from '@/components/company/SvgWorldMap'
 import type { MapMarker } from '@/components/company/WorldMap'
 import { useStore } from '@/store/StoreContext'
-import { INDIA_CANDIDATES, MILL_LAYERS, PATH_META, PILLAR_META, SIGNAL_META, type CandidateRegion, type Pillar } from '@/data/mills'
+import { ALL_CANDIDATES, MILL_LAYERS_BY_REGION, PATH_META, PILLAR_META, REGION_META, SIGNAL_META, type CandidateRegion, type Pillar, type RegionKey } from '@/data/mills'
+import { MillBuildPlanner } from '@/components/mills/MillBuildPlanner'
+import { NextGenPipeline } from '@/components/mills/NextGenPipeline'
 import { cn } from '@/lib/cn'
 
 const PILLARS: Pillar[] = ['agri', 'textile', 'demand']
@@ -23,14 +26,21 @@ export function NextGenMillsPage() {
   const { data } = useStore()
   const Q = (id?: string) => (id ? data.quantities.find((q) => q.id === id) : undefined)
   const S = (id?: string) => (id ? data.sources.find((s) => s.id === id) : undefined)
+  const [params, setParams] = useSearchParams()
+  const region = (Object.keys(REGION_META).includes(params.get('region') ?? '') ? params.get('region') : 'india') as RegionKey
+  const meta = REGION_META[region]
+  const candidates = useMemo(() => ALL_CANDIDATES.filter((c) => c.region === region), [region])
   const [w, setW] = useState<Weights>({ agri: 1, textile: 1, demand: 1 })
-  const [selected, setSelected] = useState<string>(INDIA_CANDIDATES[0].id)
+  const [selected, setSelected] = useState<string>(candidates[0].id)
+  useEffect(() => {
+    if (!candidates.some((c) => c.id === selected)) setSelected(candidates[0].id)
+  }, [candidates, selected])
 
-  const ranked = useMemo(() => [...INDIA_CANDIDATES].map((r) => ({ r, s: score(r, w) })).sort((a, b) => b.s - a.s), [w])
+  const ranked = useMemo(() => [...candidates].map((r) => ({ r, s: score(r, w) })).sort((a, b) => b.s - a.s), [w, candidates])
   const maxScore = PILLARS.reduce((a, p) => a + 2 * w[p], 0) || 1
-  const sel = INDIA_CANDIDATES.find((r) => r.id === selected)!
+  const sel = candidates.find((r) => r.id === selected) ?? candidates[0]
 
-  const markers: MapMarker[] = INDIA_CANDIDATES.map((r) => ({
+  const markers: MapMarker[] = candidates.map((r) => ({
     id: r.id,
     lat: r.lat,
     lng: r.lng,
@@ -42,8 +52,6 @@ export function NextGenMillsPage() {
     overlap: r.id === selected,
   }))
 
-  const textileWaste = Q('q_in_textile_waste')
-  const restart = S('src_canopy_ar_2324')
 
   return (
     <AppShell crumbs={[{ label: 'Next Gen mills' }]}>
@@ -51,34 +59,44 @@ export function NextGenMillsPage() {
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
           <div>
             <h1 className="text-[32px] font-bold text-slate-900 tracking-tight leading-tight">Where Next Gen mills should go</h1>
-            <p className="text-[15px] text-slate-500 mt-1">Matching feedstock to demand, starting with India, the first of Canopy's six scale-up regions.</p>
+            <p className="text-[15px] text-slate-500 mt-1">Matching feedstock to demand in Canopy's first three scale-up regions, then sizing the build.</p>
           </div>
-          <div className="flex rounded-xl bg-cream-200 p-1 text-[13px] font-semibold">
-            <span className="whitespace-nowrap rounded-lg px-4 py-2 bg-brand-500 text-white shadow-sm">India</span>
-            <span className="whitespace-nowrap rounded-lg px-4 py-2 text-slate-400" title="Planned">North America</span>
-            <span className="whitespace-nowrap rounded-lg px-4 py-2 text-slate-400" title="Planned">Europe</span>
+          <div className="flex rounded-xl bg-cream-200 p-1 text-[13px] font-semibold overflow-x-auto" role="tablist">
+            {(Object.keys(REGION_META) as RegionKey[]).map((k) => (
+              <button
+                key={k}
+                role="tab"
+                aria-selected={k === region}
+                onClick={() => setParams(k === 'india' ? {} : { region: k }, { replace: true })}
+                className={cn('whitespace-nowrap rounded-lg px-4 py-2 transition-colors', k === region ? 'bg-brand-500 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900')}
+              >
+                {REGION_META[k].label}
+              </button>
+            ))}
           </div>
         </div>
 
         <div className="rounded-2xl border border-brand-100 bg-brand-50 px-5 py-4 grid md:grid-cols-[1fr_auto] gap-4 items-center">
           <div>
             <div className="text-[11px] uppercase tracking-wide font-semibold text-brand-700">Decision this supports</div>
-            <p className="text-[15px] font-semibold text-slate-900 mt-0.5">Which Indian regions should Canopy put in front of investors first, and for which kind of mill?</p>
+            <p className="text-[15px] font-semibold text-slate-900 mt-0.5">{meta.question}</p>
             <p className="text-[12px] text-slate-600 mt-1">
               Canopy's Next Gen plan commits to "identify ideal mill site locations". This view makes a first cut from verified data and shows which data would sharpen it.
             </p>
           </div>
           <div className="flex flex-wrap gap-1.5 md:justify-end">
-            {['Canopy India hub', 'Investors', 'State governments', 'Producers'].map((u) => (
+            {[region === 'india' ? 'Canopy India hub' : `Canopy ${meta.label} hub`, 'Investors', region === 'india' ? 'State governments' : 'Governments', 'Producers'].map((u) => (
               <Pill key={u} tone="forest"><Users size={11} /> {u}</Pill>
             ))}
           </div>
         </div>
 
         <div className="grid md:grid-cols-3 gap-4">
-          <Context label="Paddy straw, Punjab + Haryana + NCR UP" value="26.2 Mt" sub="Generated, 2021 projection. Not all of it is available." badge={<EvidenceBadge quantity={Q('q_in_paddy_punjab')} label="PIB" size="xs" />} />
-          <Context label="Textile waste in India each year" value={textileWaste?.value ? `${textileWaste.value} Mt` : 'unknown'} sub="51% post-consumer · 42% pre-consumer · 7% imported" badge={textileWaste && <EvidenceBadge quantity={textileWaste} size="xs" />} />
-          <Context label="Re-START Alliance target" value="1 Mt" sub="Recycled fibre produced in India by 2030. Canopy, IDH, Fashion for Good, Laudes" badge={restart && <EvidenceBadge source={restart} label="Canopy AR 23/24" size="xs" />} />
+          {meta.context.map((c) => {
+            const q = Q(c.quantityId)
+            const v = c.value ?? (q?.value != null ? `${q.value.toLocaleString('en-US')} ${q.unit.replace(' / yr', '')}` : 'unknown')
+            return <Context key={c.label} label={c.label} value={v} sub={c.sub} badge={q && <EvidenceBadge quantity={q} size="xs" />} />
+          })}
         </div>
 
         <div className="grid xl:grid-cols-[1.1fr_1fr] gap-4 items-start">
@@ -86,7 +104,7 @@ export function NextGenMillsPage() {
             <CardHeader title="Candidate regions" subtitle="Colour shows the kind of mill each region suits" />
             <div className="px-5 pb-5">
               <div className="rounded-xl overflow-hidden bg-white border border-slate-200" style={{ height: 380 }}>
-                <SvgWorldMap markers={markers} fitToIds={['356']} highlightById={{ '356': '#efe9dc' }} onMarkerClick={(m) => setSelected(m.id)} zoomable />
+                <SvgWorldMap key={region} markers={markers} fitToIds={meta.fit} highlightById={Object.fromEntries(meta.highlight.map((id) => [id, '#efe9dc']))} onMarkerClick={(m) => setSelected(m.id)} zoomable />
               </div>
               <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-[11px] text-slate-600">
                 {Object.values(PATH_META).map((p) => (
@@ -197,6 +215,10 @@ export function NextGenMillsPage() {
           </div>
         </Card>
 
+        <MillBuildPlanner region={region} candidate={sel} />
+
+        <NextGenPipeline region={region} />
+
         <Card>
           <CardHeader title={<span className="flex items-center gap-2"><Layers size={16} className="text-brand-600" /> Data layers</span>} subtitle="What is loaded and what would sharpen the ranking, in order" />
           <div className="px-5 pb-5 overflow-x-auto">
@@ -210,7 +232,7 @@ export function NextGenMillsPage() {
                 </tr>
               </thead>
               <tbody>
-                {MILL_LAYERS.map((l) => (
+                {MILL_LAYERS_BY_REGION[region].map((l) => (
                   <tr key={l.name} className="border-t border-slate-100 align-top">
                     <td className="py-2 pr-3"><div className="font-semibold text-slate-900">{l.name}</div><div className="text-[11px] text-slate-400">{l.publisher}</div></td>
                     <td className="py-2 pr-3 text-slate-600">{l.what}</td>

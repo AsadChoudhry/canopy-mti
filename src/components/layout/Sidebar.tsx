@@ -1,12 +1,16 @@
 import { NavLink } from 'react-router-dom'
-import { Globe2, Building2, Leaf, Database, Factory, Map } from 'lucide-react'
+import { Globe2, Building2, Leaf, Database, Factory, Map, ShieldCheck, ShieldAlert, Scale, ArrowLeftRight } from 'lucide-react'
 import { cn } from '@/lib/cn'
 
 const NAV = [
   { to: '/', label: 'Global overview', icon: Globe2, end: true },
   { to: '/companies', label: 'Companies', icon: Building2 },
+  { to: '/transparency', label: 'Producer transparency', icon: ShieldCheck },
+  { to: '/risk', label: 'Supply risk', icon: ShieldAlert },
   { to: '/solutions', label: 'Canopy solutions', icon: Leaf },
   { to: '/mills', label: 'Next Gen mills', icon: Factory },
+  { to: '/demand', label: 'Demand and supply', icon: ArrowLeftRight },
+  { to: '/policy', label: 'Policy tracker', icon: Scale },
   { to: '/roadmap', label: 'Year-one roadmap', icon: Map },
   { to: '/workspace', label: 'Data workspace', icon: Database },
 ]

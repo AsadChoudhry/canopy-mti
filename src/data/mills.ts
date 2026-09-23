@@ -7,6 +7,7 @@
 export type MillPath = 'agri_residue' | 'textile' | 'retrofit'
 export type Signal = 'strong' | 'present' | 'unknown' | 'none'
 export type Pillar = 'agri' | 'textile' | 'demand'
+export type RegionKey = 'india' | 'north_america' | 'europe'
 
 export const PILLAR_META: Record<Pillar, { label: string; short: string; what: string }> = {
   agri: { label: 'Agricultural residue', short: 'Ag residue', what: 'Straw and other crop residues that are burned or left unused.' },
@@ -36,6 +37,7 @@ export interface PillarEvidence {
 
 export interface CandidateRegion {
   id: string
+  region: RegionKey
   name: string
   state: string
   lat: number
@@ -46,7 +48,7 @@ export interface CandidateRegion {
   openQuestions: string[]
 }
 
-export const INDIA_CANDIDATES: CandidateRegion[] = [
+const INDIA: Omit<CandidateRegion, 'region'>[] = [
   {
     id: 'haryana_panipat',
     name: 'Panipat and surrounds',
@@ -70,7 +72,7 @@ export const INDIA_CANDIDATES: CandidateRegion[] = [
     lng: 75.6,
     path: 'agri_residue',
     pillars: {
-      agri: { signal: 'strong', text: '18.74 Mt paddy straw, 16.07 Mt of it non-basmati, the straw most often burned (2021, projected).', quantityId: 'q_in_paddy_punjab' },
+      agri: { signal: 'strong', text: '18.74 Mt paddy straw, 16.07 Mt of it non-basmati, the straw most often burned (2021, projected). 5,114 residue fires still detected in the 2025 season.', quantityId: 'q_in_paddy_punjab' },
       textile: { signal: 'unknown', text: 'Not loaded.' },
       demand: { signal: 'none', text: 'No Hot Button MMCF mill located here.' },
     },
@@ -136,9 +138,204 @@ export const MILL_LAYERS: DataLayer[] = [
   { name: 'Paddy straw by state', publisher: 'PIB / state governments', what: 'Straw generated in Punjab, Haryana and NCR Uttar Pradesh.', answers: 'How much feedstock exists.', status: 'loaded' },
   { name: 'Textile waste, national', publisher: 'Fashion for Good, Wealth in Waste', what: '7.8 Mt a year; pre-, post-consumer and imported split.', answers: 'Scale of the textile feedstock.', status: 'loaded' },
   { name: 'Hot Button producer updates', publisher: 'Canopy', what: 'Mill expansions and Next Gen lines by producer.', answers: 'Where demand for Next Gen pulp already sits.', status: 'loaded' },
-  { name: 'Active fire detections', publisher: 'NASA FIRMS (VIIRS)', what: 'Daily satellite fire points; stubble burning shows in October and November.', answers: 'Where residue is being burned, which means it is not used for anything else.', status: 'next' },
+  { name: 'Paddy fire counts, Punjab', publisher: 'CAQM, via Lok Sabha answer', what: '5,114 residue burning events, 15 September to 30 November 2025; about 90% below 2022 across Punjab and Haryana.', answers: 'Whether straw is still being burned, and so still uncommitted.', status: 'loaded' },
+  { name: 'Active fire detections by district', publisher: 'NASA FIRMS (VIIRS)', what: 'Daily satellite fire points; stubble burning shows in October and November.', answers: 'Where within a state residue is still being burned.', status: 'next' },
   { name: 'Crop production by district', publisher: 'Directorate of Economics and Statistics, Ministry of Agriculture', what: 'Rice, wheat and sugarcane output by district, converted with residue ratios.', answers: 'Residue in every state, not just three.', status: 'next' },
   { name: 'Textile waste by cluster', publisher: 'Fashion for Good, Sorting for Circularity India', what: 'Waste volumes and fibre mix for Panipat, Tiruppur and others.', answers: 'Which clusters can feed chemical recycling.', status: 'next' },
   { name: 'Dissolving pulp imports', publisher: 'UN Comtrade, HS 470200', what: 'Imports by partner country.', answers: 'How much wood pulp Indian mills import, and so how much Next Gen pulp could replace.', status: 'later' },
   { name: 'Straw already in use', publisher: 'CAQM and state pollution boards', what: 'Straw going to biomass power, boilers and in-field management.', answers: 'What is really left for a pulp mill.', status: 'later' },
 ]
+
+export const INDIA_CANDIDATES: CandidateRegion[] = INDIA.map((r) => ({ ...r, region: 'india' }))
+
+/* ------------------------------------------------------------------ */
+/* North America and Europe                                             */
+/* ------------------------------------------------------------------ */
+
+export const NA_CANDIDATES: CandidateRegion[] = [
+  {
+    id: 'sk_regina',
+    region: 'north_america',
+    name: 'Regina and southern Saskatchewan',
+    state: 'Saskatchewan, Canada',
+    lat: 50.45,
+    lng: -104.61,
+    path: 'agri_residue',
+    pillars: {
+      agri: { signal: 'present', text: 'Prairie wheat straw. Red Leaf Pulp plans to take 400,000 t of straw a year; provincial straw supply is not loaded.', quantityId: 'q_redleaf_straw_in' },
+      textile: { signal: 'unknown', text: 'Not loaded.' },
+      demand: { signal: 'present', text: 'Packaging maker Dart funds Red Leaf. No Hot Button MMCF mill nearby, so demand is packaging, not textiles.', sourceId: 'src_redleaf_ck' },
+    },
+    why: 'The first commercial straw pulp mill in North America is under construction here, so the question is the second and third site, not the first.',
+    openQuestions: ['Straw surplus by rural municipality after soil and livestock needs.', 'Which of the Prairie sites Red Leaf has scouted overlap with Canopy brand partner demand?'],
+  },
+]
+
+export const EU_CANDIDATES: CandidateRegion[] = [
+  {
+    id: 'se_sundsvall',
+    region: 'europe',
+    name: 'Sundsvall (Ortviken)',
+    state: 'Sweden',
+    lat: 62.39,
+    lng: 17.36,
+    path: 'textile',
+    pillars: {
+      agri: { signal: 'none', text: 'Not a straw region.' },
+      textile: { signal: 'present', text: '6.94 Mt of textile waste in the EU (2022). Only EU-wide totals are loaded, not flows into Sweden.', quantityId: 'q_eu_textile_waste' },
+      demand: { signal: 'strong', text: 'Circulose restarting a 60,000 t a year textile-to-textile pulp mill in 2026, with commitments from 11 brands.', quantityId: 'q_circulose_capacity' },
+    },
+    why: 'The world\'s first commercial-scale chemical textile recycling plant is restarting here, with room to double capacity. The fastest European tonnes come from filling and expanding it.',
+    openQuestions: ['Where will the sorted cotton-rich feedstock come from once EU textile EPR schemes start in 2028?', 'Which brands have committed, and at what volumes?'],
+  },
+  {
+    id: 'fi_kemi',
+    region: 'europe',
+    name: 'Kemi (Veitsiluoto)',
+    state: 'Finland',
+    lat: 65.73,
+    lng: 24.56,
+    path: 'textile',
+    pillars: {
+      agri: { signal: 'none', text: 'Not a straw region.' },
+      textile: { signal: 'present', text: 'EU-wide textile waste only. No Finnish collection figure loaded.', quantityId: 'q_eu_textile_waste' },
+      demand: { signal: 'present', text: 'Infinited Fiber holds an environmental permit (March 2026) for a recycled fibre factory on a former Stora Enso site. No investment decision yet.', sourceId: 'src_infinited_kemi' },
+    },
+    why: 'Permitted, on a brownfield pulp site with existing wastewater treatment. What is missing is the investment decision, which is where Canopy\'s brand demand evidence can help.',
+    openQuestions: ['What offtake volume would unlock the final investment decision?', 'Is the 30,000 t a year plan still current?'],
+  },
+  {
+    id: 'se_morrum',
+    region: 'europe',
+    name: 'Mörrum',
+    state: 'Sweden',
+    lat: 56.19,
+    lng: 14.75,
+    path: 'retrofit',
+    pillars: {
+      agri: { signal: 'none', text: 'Not a straw region.' },
+      textile: { signal: 'present', text: 'Södra blends recycled textiles into dissolving pulp here (OnceMore). Volume from an unverified press release.', sourceId: 'src_sodra_oncemore' },
+      demand: { signal: 'present', text: 'OnceMore pulp goes to MMCF producers, Lenzing among them.', sourceId: 'src_sodra_oncemore' },
+    },
+    why: 'An operating dissolving pulp mill already running textile blends. Raising the recycled share is a retrofit, not a new build.',
+    openQuestions: ['Current recycled share of OnceMore pulp and total tonnes.', 'Does it meet Canopy\'s Next Gen definition at the blend level?'],
+  },
+  {
+    id: 'at_lenzing',
+    region: 'europe',
+    name: 'Lenzing',
+    state: 'Austria',
+    lat: 47.97,
+    lng: 13.6,
+    path: 'retrofit',
+    pillars: {
+      agri: { signal: 'unknown', text: 'Not loaded.' },
+      textile: { signal: 'unknown', text: 'Not loaded.' },
+      demand: { signal: 'strong', text: 'Lenzing holds 12.65% of global MMCF capacity and sells Next Gen lines (Hot Button 2026).', sourceId: 'src_hotbutton_2026' },
+    },
+    why: 'The largest European MMCF producer, with its own pulp mill on site. A share of its pulp switching to Next Gen moves more tonnes than a small new mill.',
+    openQuestions: ['What share of Lenzing pulp could come from recycled textiles by 2030?', 'Would it buy Circulose or OnceMore pulp, or build its own line?'],
+  },
+]
+
+export const ALL_CANDIDATES: CandidateRegion[] = [...INDIA_CANDIDATES, ...NA_CANDIDATES, ...EU_CANDIDATES]
+
+export interface RegionMeta {
+  label: string
+  /** ISO numeric ids to fit the map to. */
+  fit: string[]
+  highlight: string[]
+  question: string
+  context: { label: string; quantityId?: string; value?: string; sub: string }[]
+}
+
+export const REGION_META: Record<RegionKey, RegionMeta> = {
+  india: {
+    label: 'India',
+    fit: ['356'],
+    highlight: ['356'],
+    question: 'Which Indian regions should Canopy put in front of investors first, and for which kind of mill?',
+    context: [
+      { label: 'Paddy straw, Punjab + Haryana + NCR UP', value: '26.2 Mt', quantityId: 'q_in_paddy_punjab', sub: 'Generated, 2021 projection. Not all of it is available.' },
+      { label: 'Textile waste in India each year', quantityId: 'q_in_textile_waste', sub: '51% post-consumer · 42% pre-consumer · 7% imported' },
+      { label: 'Capacity Canopy\'s India blueprint enables', quantityId: 'q_in_ng_capacity_target', sub: 'From an initial $2 bn. $13 to 15 bn over the next decade.' },
+    ],
+  },
+  north_america: {
+    label: 'North America',
+    fit: ['124', '840'],
+    highlight: ['124', '840'],
+    question: 'Where should the second and third North American straw mills go?',
+    context: [
+      { label: 'Red Leaf straw pulp, Regina, from 2028', quantityId: 'q_redleaf_pulp_out', sub: 'Market pulp from 400,000 t of straw a year' },
+      { label: 'Straw to pulp yield, Red Leaf design', quantityId: 'q_straw_pulp_yield', sub: 'The planner uses this as its default' },
+      { label: 'Prairie straw supply', value: 'not loaded', sub: 'Needs provincial crop and residue statistics' },
+    ],
+  },
+  europe: {
+    label: 'Europe',
+    fit: ['752', '246', '040'],
+    highlight: ['752', '246', '040'],
+    question: 'Which European projects need demand evidence to reach investment decision or expand?',
+    context: [
+      { label: 'Textile waste in the EU, 2022', quantityId: 'q_eu_textile_waste', sub: '16 kg a person; under 15% collected separately' },
+      { label: 'Circulose Ortviken restart', quantityId: 'q_circulose_capacity', sub: 'Textile-to-textile pulp, potential to double' },
+      { label: 'MMCF from recycled feedstock, world', quantityId: 'q_mmcf_recycled_share_2024', sub: 'Of 8.4 Mt MMCF in 2024 (Textile Exchange)' },
+    ],
+  },
+}
+
+/* ------------------------------------------------------------------ */
+/* Named Next Gen capacity pipeline                                     */
+/* ------------------------------------------------------------------ */
+
+export type ProjectStage = 'operating' | 'restarting' | 'construction' | 'permitted' | 'announced'
+
+export const STAGE_META: Record<ProjectStage, { label: string; colour: string; order: number }> = {
+  operating: { label: 'Operating', colour: '#00614f', order: 0 },
+  restarting: { label: 'Restarting', colour: '#009a7e', order: 1 },
+  construction: { label: 'Under construction', colour: '#6a47ea', order: 2 },
+  permitted: { label: 'Permitted, no investment decision', colour: '#f2b53a', order: 3 },
+  announced: { label: 'Announced', colour: '#9aa3ad', order: 4 },
+}
+
+export interface PipelineProject {
+  id: string
+  name: string
+  operator: string
+  place: string
+  region: RegionKey | 'china'
+  path: MillPath
+  stage: ProjectStage
+  year?: number
+  tonnes: number
+  output: 'pulp' | 'fibre'
+  quantityId?: string
+  sourceId: string
+  note?: string
+}
+
+export const PIPELINE: PipelineProject[] = [
+  { id: 'fac_ng_sodra', name: 'OnceMore', operator: 'Södra', place: 'Mörrum, Sweden', region: 'europe', path: 'retrofit', stage: 'operating', year: 2022, tonnes: 6000, output: 'pulp', sourceId: 'src_sodra_oncemore', note: 'Blend of wood and recycled textile; Next Gen share lower than the tonnage.' },
+  { id: 'fac_ng_xinxiang', name: 'Juncao grass pulp', operator: 'Xinxiang Chemical Fiber (Bailu)', place: 'Henan, China', region: 'china', path: 'agri_residue', stage: 'operating', tonnes: 10000, output: 'pulp', sourceId: 'src_hotbutton_2026', note: 'Capacity expanded to 10,000 t (Hot Button 2026 producer update).' },
+  { id: 'fac_ng_circulose', name: 'Factory O', operator: 'Circulose', place: 'Sundsvall, Sweden', region: 'europe', path: 'textile', stage: 'restarting', year: 2026, tonnes: 60000, output: 'pulp', quantityId: 'q_circulose_capacity', sourceId: 'src_circulose_ortviken' },
+  { id: 'fac_ng_redleaf', name: 'Regina mill', operator: 'Red Leaf Pulp', place: 'Regina, Saskatchewan', region: 'north_america', path: 'agri_residue', stage: 'construction', year: 2028, tonnes: 200000, output: 'pulp', quantityId: 'q_redleaf_pulp_out', sourceId: 'src_redleaf_ck' },
+  { id: 'fac_ng_infinited', name: 'Kemi factory', operator: 'Infinited Fiber', place: 'Kemi, Finland', region: 'europe', path: 'textile', stage: 'permitted', tonnes: 30000, output: 'fibre', quantityId: 'q_infinited_capacity', sourceId: 'src_infinited_kemi' },
+]
+
+export const MILL_LAYERS_BY_REGION: Record<RegionKey, DataLayer[]> = {
+  india: MILL_LAYERS,
+  north_america: [
+    { name: 'Red Leaf Regina mill', publisher: 'Corporate Knights', what: 'Straw in, pulp out, start dates and funder.', answers: 'The reference design for a Prairie straw mill.', status: 'loaded' },
+    { name: 'Field crop area and production', publisher: 'Statistics Canada, table 32-10-0359; USDA NASS', what: 'Wheat, barley and flax by census division and county.', answers: 'Straw generated around each candidate site.', status: 'next' },
+    { name: 'Sustainable straw removal rates', publisher: 'Provincial agriculture ministries, USDA', what: 'Share of straw that can leave the field without harming soil.', answers: 'How much of the straw a mill can actually buy.', status: 'next' },
+    { name: 'Packaging and tissue mills', publisher: 'Company disclosures, Pack4Good engagement', what: 'Mills within trucking distance that could take straw pulp.', answers: 'Who buys the pulp.', status: 'later' },
+  ],
+  europe: [
+    { name: 'Textile waste, EU-27', publisher: 'European Environment Agency', what: '6.94 Mt generated in 2022; under 15% collected separately.', answers: 'Scale of the European textile feedstock.', status: 'loaded' },
+    { name: 'Named Next Gen projects', publisher: 'Circulose, Infinited Fiber, Södra', what: 'Capacity, stage and year.', answers: 'Which projects are closest to adding tonnes.', status: 'loaded' },
+    { name: 'Textile EPR schemes by Member State', publisher: 'National transpositions of the revised Waste Framework Directive', what: 'Collection targets and fees from 2028.', answers: 'Where sorted feedstock will appear first.', status: 'next' },
+    { name: 'Sorting capacity', publisher: 'Fashion for Good Sorting for Circularity Europe, Euratex', what: 'Automated sorting plants and cotton-rich output.', answers: 'Whether feedstock is clean enough for chemical recycling.', status: 'next' },
+    { name: 'Dissolving pulp trade', publisher: 'UN Comtrade, HS 470200', what: 'EU imports by partner.', answers: 'How much imported wood pulp Next Gen pulp could replace.', status: 'later' },
+  ],
+}

@@ -7,6 +7,10 @@ import { SolutionsPage } from '@/pages/SolutionsPage'
 import { WorkspacePage } from '@/pages/WorkspacePage'
 import { NextGenMillsPage } from '@/pages/NextGenMillsPage'
 import { RoadmapPage } from '@/pages/RoadmapPage'
+import { Pack4GoodPage } from '@/pages/Pack4GoodPage'
+import { RiskPage } from '@/pages/RiskPage'
+import { DemandPage } from '@/pages/DemandPage'
+import { PolicyPage } from '@/pages/PolicyPage'
 
 export default function App() {
   return (
@@ -20,6 +24,10 @@ export default function App() {
             <Route path="/companies/:companyId/:tab" element={<CompaniesPage />} />
             <Route path="/solutions" element={<SolutionsPage />} />
             <Route path="/mills" element={<NextGenMillsPage />} />
+            <Route path="/transparency" element={<Pack4GoodPage />} />
+            <Route path="/risk" element={<RiskPage />} />
+            <Route path="/demand" element={<DemandPage />} />
+            <Route path="/policy" element={<PolicyPage />} />
             <Route path="/roadmap" element={<RoadmapPage />} />
             <Route path="/workspace" element={<WorkspacePage />} />
             <Route path="/ecopaper" element={<Navigate to="/solutions" replace />} />

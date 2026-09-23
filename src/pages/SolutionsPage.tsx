@@ -7,6 +7,7 @@ import { EvidenceBadge } from '@/components/ui/EvidenceBadge'
 import { useStore } from '@/store/StoreContext'
 import type { Solution } from '@/data/model'
 import { cn } from '@/lib/cn'
+import { EcoPaperMatch } from '@/components/solutions/EcoPaperMatch'
 
 type Tab = 'EcoPaper' | 'Next Gen providers' | 'ForestMapper'
 
@@ -80,7 +81,7 @@ export function SolutionsPage() {
           <Info size={15} className="text-brand-500" /> For a specific transition, open a company and select its product. No generic transition calculator or savings claim lives on this page.
         </div>
 
-        <div className="flex gap-1 border-b border-slate-200">
+        <div className="flex gap-1 border-b border-slate-200 overflow-x-auto">
           {([
             { t: 'EcoPaper', icon: <FileText size={15} /> },
             { t: 'Next Gen providers', icon: <Leaf size={15} /> },
@@ -91,6 +92,8 @@ export function SolutionsPage() {
             </button>
           ))}
         </div>
+
+        {tab === 'EcoPaper' && <EcoPaperMatch />}
 
         <label className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-[14px] text-slate-400">
           <Search size={17} />
