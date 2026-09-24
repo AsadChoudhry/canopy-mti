@@ -11,6 +11,7 @@ interface Props {
   nextGen: Quantity
   nonFibre: Quantity
   nextGenCapacity: Quantity
+  nextGenUpper?: Quantity
 }
 
 function Row({
@@ -46,7 +47,7 @@ function Row({
   )
 }
 
-export function PackagingComposition({ total, recycled, virgin, certified, nextGen, nonFibre, nextGenCapacity }: Props) {
+export function PackagingComposition({ total, recycled, virgin, certified, nextGen, nonFibre, nextGenCapacity, nextGenUpper }: Props) {
   const T = total.value ?? 277.9
   const r = recycled.value ?? 0
   const v = virgin.value ?? 0
@@ -74,7 +75,19 @@ export function PackagingComposition({ total, recycled, virgin, certified, nextG
         <Row label="FSC / PEFC certified" pct={`${certOfVirgin}%`} tonnes={`~${certMt} Mt`} quantity={certified} badge="Est. range" sub="Share of virgin fibre, not of the total" indent />
         <Row label="Uncertified / controlled wood" pct={`${100 - certOfVirgin}%`} tonnes={`~${v - certMt} Mt`} sub="Remainder of virgin fibre" indent muted />
 
-        <Row label="Next Gen fibre" pct="Unknown" quantity={nextGen} muted sub={`Canopy reports ${nextGenCapacity.value} Mt capacity across paper, packaging and textiles`} />
+        {nextGenUpper?.value != null ? (
+          <Row
+            label="Next Gen fibre"
+            pct={`≤${pct(nextGenUpper.value)}`}
+            tonnes={`≤${nextGenUpper.value} Mt`}
+            quantity={nextGenUpper}
+            badge="Upper bound"
+            muted
+            sub={`At most Canopy's ${nextGenUpper.value} Mt of 2024 Next Gen production, which covers paper, packaging and textiles. Packaging's own share isn't published.`}
+          />
+        ) : (
+          <Row label="Next Gen fibre" pct="Unknown" quantity={nextGen} muted sub={`Canopy reports ${nextGenCapacity.value} Mt capacity across paper, packaging and textiles`} />
+        )}
 
         <Row label="Non-fibre" pct={pct(nf)} tonnes={`~${nf} Mt`} quantity={nonFibre} muted sub="Starch, fillers, coatings and moisture" />
       </div>

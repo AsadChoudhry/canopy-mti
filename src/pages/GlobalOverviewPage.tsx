@@ -176,7 +176,7 @@ export function GlobalOverviewPage() {
                     </div>
                   ) : (
                     <div className="animate-fade-up">
-                      <PackagingComposition total={packaging} recycled={pkgRecycled} virgin={pkgVirgin} certified={pkgCertified} nextGen={pkgNextGen} nonFibre={pkgNonFibre} nextGenCapacity={ngCapacity} />
+                      <PackagingComposition total={packaging} recycled={pkgRecycled} virgin={pkgVirgin} certified={pkgCertified} nextGen={pkgNextGen} nonFibre={pkgNonFibre} nextGenCapacity={ngCapacity} nextGenUpper={data.quantities.find((q) => q.id === 'q_pkg_nextgen_upper')} />
                     </div>
                   )}
                 </div>

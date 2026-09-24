@@ -8,7 +8,7 @@ import { cn } from '@/lib/cn'
 const START_YEAR = 2024
 const END_YEAR = 2033
 const W = 480
-const H = 220
+const H = 180
 const PAD = { l: 34, r: 14, t: 22, b: 26 }
 
 /**
@@ -46,9 +46,9 @@ export function RoadTo60() {
         title={<span className="flex items-center gap-2"><Target size={16} className="text-brand-600" /> Road to 60 Mt</span>}
         subtitle="Canopy's 2033 Next Gen target against 2024 production. Covers paper, packaging and textiles together."
       />
-      <div className="px-5 pb-5 grid lg:grid-cols-[1fr_260px] gap-5 items-start">
+      <div className="px-5 pb-5 grid lg:grid-cols-[minmax(0,560px)_1fr] gap-5 items-start">
         <div>
-          <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" onMouseLeave={() => setHover(null)} role="img" aria-label="Required Next Gen growth path from 8.35 Mt in 2024 to 60 Mt in 2033">
+          <svg viewBox={`0 0 ${W} ${H}`} className="w-full max-w-[520px] h-auto" onMouseLeave={() => setHover(null)} role="img" aria-label="Required Next Gen growth path from 8.35 Mt in 2024 to 60 Mt in 2033">
             {[0, 20, 40, 60].map((v) => (
               <g key={v}>
                 <line x1={PAD.l} x2={W - PAD.r} y1={y(v)} y2={y(v)} stroke="#e5e7eb" strokeWidth={1} />
@@ -88,7 +88,7 @@ export function RoadTo60() {
           </div>
         </div>
 
-        <dl className="grid grid-cols-2 lg:grid-cols-1 gap-3">
+        <dl className="grid grid-cols-2 gap-3 content-start">
           <Stat label="Produced in 2024" value={`${p0} Mt`} q={prod} />
           <Stat label="Growth needed every year" value={`${cagr?.value ?? (rate * 100).toFixed(1)}%`} q={cagr} />
           <Stat label="Investment Canopy says is needed" value={`$${invest?.value} bn`} q={invest} sub={perT?.value ? `≈ $${perT.value.toLocaleString('en-US')} per tonne of new annual output` : undefined} />
