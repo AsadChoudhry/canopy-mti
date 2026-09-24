@@ -41,8 +41,8 @@ function Row({
         {sub && <div className="text-[11px] text-slate-500 mt-0.5">{sub}</div>}
       </div>
       {tonnes && <div className="text-[12px] text-slate-500 tabular-nums whitespace-nowrap shrink-0">{tonnes}</div>}
-      <div className={cn('tabular-nums font-bold text-right whitespace-nowrap shrink-0', indent ? 'text-[15px] w-[52px]' : 'text-[19px] w-[62px]', muted ? 'text-slate-400' : 'text-slate-900', unknown && 'text-[12px] font-semibold italic')}>{pct}</div>
-      <div className="w-[92px] flex justify-end shrink-0">{quantity && <EvidenceBadge quantity={quantity} size="xs" label={badge} />}</div>
+      <div className={cn('tabular-nums font-bold text-right whitespace-nowrap shrink-0', indent ? 'text-[15px] w-[52px]' : 'text-[19px] w-[72px]', muted ? 'text-slate-400' : 'text-slate-900', unknown && 'text-[12px] font-semibold italic')}>{pct}</div>
+      <div className="w-[100px] pl-2 flex justify-end shrink-0">{quantity && <EvidenceBadge quantity={quantity} size="xs" label={badge} />}</div>
     </div>
   )
 }
@@ -64,7 +64,7 @@ export function PackagingComposition({ total, recycled, virgin, certified, nextG
           <div className="min-w-0 flex-1 text-[14px] font-semibold text-slate-900">Packaging paper &amp; board</div>
           <div className="text-[12px] text-slate-500 tabular-nums">{T} Mt</div>
           <div className="text-[19px] font-bold text-slate-900 tabular-nums w-[62px] text-right shrink-0">100%</div>
-          <div className="w-[92px] flex justify-end shrink-0">
+          <div className="w-[100px] pl-2 flex justify-end shrink-0">
             <EvidenceBadge quantity={total} size="xs" />
           </div>
         </div>
